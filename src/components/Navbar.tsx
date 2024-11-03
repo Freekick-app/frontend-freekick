@@ -16,7 +16,7 @@ export default function Navbar() {
   
 
     return (
-        <footer className="flex justify-between items-center w-[320px]  h-[80px] text-black bg-gray-900 p-4 text-2xl rounded-[4rem] fixed bottom-[20px] left-1/2 transform -translate-x-1/2">
+        <footer className="flex justify-between items-center w-[320px]  h-[80px] text-black bg-gray-900 p-4 text-2xl rounded-[4rem] fixed bottom-[10px] left-1/2 transform -translate-x-1/2">
       
         <button  className="w-12 h-12 flex items-center justify-center rounded-full bg-[#CEFF00] ">
           <Link href="/index"><FiHome /></Link>

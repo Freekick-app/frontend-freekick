@@ -1,8 +1,73 @@
 import { FaMoneyBill } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+interface Team {
+  id: number;
+  name: string;
+  abbreviation: string;
+  display_name: string;
+  logo_url: string;
+}
+
+interface Match {
+  id: number;
+  home_team: Team;
+  away_team: Team;
+  date: string; 
+}
 
 const MyContests = () => {
+  const [name, setName] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [data, setData] = useState<Match[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const storedName = localStorage.getItem("username");
+    const storedPassword = localStorage.getItem("password");
+
+    if (storedName) setName(storedName);
+    if (storedPassword) setPassword(storedPassword);
+
+    if (storedName && storedPassword) {
+      axios
+        .get("http://127.0.0.1:8000/api/sports/games", {
+          headers: {
+            Authorization: `Basic ${btoa(`${storedName}:${storedPassword}`)}`,
+          },
+        })
+        .then((response) => {
+          console.log("API response:", response.data);
+          setData(response.data);
+        })
+        .catch((error) => {
+          setError("Failed to fetch data");
+          console.error("Fetch error:", error);
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setError("Missing credentials");
+      setLoading(false);
+    }
+  }, []);
+
+  // Function to format the date
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      day: "numeric",
+      month: "short",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    };
+    const date = new Date(dateString);
+    return date.toLocaleString("en-US", options).replace(",", " at");
+  };
+
   return (
-    <div className="bg-black min-h-screen text-white p-4 space-y-6">
+    <div className="bg-black min-h-screen text-white px-4 space-y-6">
       <div className="bg-[#1F1DFF] p-6 rounded-[40px] text-center">
         <p className="text-gray-300">Balance</p>
         <h1 className="text-4xl font-bold flex items-center justify-center gap-2">
@@ -18,65 +83,49 @@ const MyContests = () => {
         </div>
       </div>
 
-      <div className="flex justify-around p-4 rounded-2xl">
-        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((day, index) => (
-          <div key={index} className="flex flex-col items-center space-y-2">
-            <div
-              className={`w-14 h-14 rounded-full flex items-center justify-center ${
-                index === 0
-                  ? 'text-[#CEFF00] border-white border-2'
-                  : index === 1
-                  ? 'bg-red-500'
-                  : 'bg-gray-700'
-              }`}
-            >
-              {index === 0 ? '✔' : index === 1 ? '✖' : ''}
-            </div>
-            <p className="text-xs text-gray-400">{day}</p>
-          </div>
-        ))}
-      </div>
-
       <div className="space-y-4">
-        {[
-          {
-            teams: [
-              { name: 'Arizona Cardinals' },
-              { name: 'Carolina Panthers' },
-            ],
-            date: '23 Sep at 5:00pm',
-          },
-          {
-            teams: [
-              { name: 'Jacksonville Jaguars' },
-              { name: 'Cleveland Browns' },
-            ],
-            date: '24 Sep at 6:00pm',
-          },
-        ].map((match, index) => (
-          <div
-            key={index}
-            className="bg-gray-800 p-4 px-16 space-y-2 items-center text-center rounded-[60px]"
-          >
-            <div className="flex justify-center items-center space-x-2">
-              <p className="text-white font-bold text-sm">
-                {match.teams[0].name}
-              </p>
-              <div className="bg-[#CEFF00] text-black font-bold px-2 py-1 rounded-full text-center">
-                vs
+        {loading ? (
+          <p className="text-center text-gray-400">Loading contests...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : data && data.length > 0 ? (
+          data.map((match) => (
+            <div
+              key={match.id}
+              className="bg-gray-800 py-4 px-4 space-y-2 items-center text-center rounded-[40px]"
+            >
+              <div className="flex justify-center items-center gap-1">
+                <img
+                  src={match.home_team.logo_url}
+                  alt={`${match.home_team.name} logo`}
+                  className="w-8 h-8"
+                />
+                <p className="text-white font-bold text-sm">
+                  {match.home_team.display_name}
+                </p>
+                <div className="bg-[#CEFF00] text-black font-bold px-2 py-1 rounded-full text-center">
+                  vs
+                </div>
+                <p className="text-white font-bold text-sm">
+                  {match.away_team.display_name}
+                </p>
+                <img
+                  src={match.away_team.logo_url}
+                  alt={`${match.away_team.name} logo`}
+                  className="w-8 h-8"
+                />
               </div>
-              <p className="text-white font-bold text-sm">
-                {match.teams[1].name}
-              </p>
-            </div>
 
-            <div className="flex justify-center">
-              <div className="bg-blue-600 text-white text-xs w-[150px] py-2 rounded-xl text-center">
-                {match.date}
+              <div className="flex justify-center">
+                <div className="bg-blue-600 text-white text-xs w-[150px] py-2 rounded-xl text-center">
+                  {formatDate(match.date)} 
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-center text-gray-400">No contests available</p>
+        )}
       </div>
     </div>
   );

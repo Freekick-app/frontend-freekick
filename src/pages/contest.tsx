@@ -4,6 +4,8 @@ import { useState } from "react";
 // import { FaTrophy } from "react-icons/fa6";
 import MyContestCard from "@/components/my-contest-card";
 import StatsDisplay from "@/components/StatsDisplay";
+import Answers from "./answers";
+import Leaderboard from "./leader-board";
 export default function Contest() {
 
     const [activeTab, setActiveTab] = useState("My Contests");
@@ -18,13 +20,16 @@ export default function Contest() {
                     <MyContestCard/>
                 </div>;
             case "Answers":
-                return <p className="text-white">Here are your answers.</p>;
+                return <div className="flex gap-4 flex-col">
+                    <Answers/>
+                    <Answers/>
+                </div>;
             case "Stats":
                 return <div>
                     <StatsDisplay/>
                     </div>;
             case "LeaderBoard":
-                return <p className="text-white">Here is the leaderboard.</p>;
+                return <div><Leaderboard></Leaderboard></div>;
             default:
                 return null;
         }
