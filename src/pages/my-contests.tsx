@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { FaMoneyBill } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -14,7 +15,7 @@ interface Match {
   id: number;
   home_team: Team;
   away_team: Team;
-  date: string; 
+  date: string;
 }
 
 const MyContests = () => {
@@ -91,37 +92,40 @@ const MyContests = () => {
         ) : data && data.length > 0 ? (
           data.map((match) => (
             <div
-              key={match.id}
-              className="bg-gray-800 py-4 px-4 space-y-2 items-center text-center rounded-[40px]"
-            >
-              <div className="flex justify-center items-center gap-1">
-                <img
-                  src={match.home_team.logo_url}
-                  alt={`${match.home_team.name} logo`}
-                  className="w-8 h-8"
-                />
-                <p className="text-white font-bold text-sm">
-                  {match.home_team.display_name}
-                </p>
-                <div className="bg-[#CEFF00] text-black font-bold px-2 py-1 rounded-full text-center">
-                  vs
-                </div>
-                <p className="text-white font-bold text-sm">
-                  {match.away_team.display_name}
-                </p>
-                <img
-                  src={match.away_team.logo_url}
-                  alt={`${match.away_team.name} logo`}
-                  className="w-8 h-8"
-                />
+            key={match.id}
+            className="bg-gray-800 py-4 px-4 flex flex-col gap-2 items-center text-center rounded-[40px]"
+          >
+            <div className="flex justify-between items-center gap-2">
+              <img
+                src={match.home_team.logo_url}
+                alt={`${match.home_team.name} logo`}
+                className="max-w-8 h-8"
+              />
+              <p className="text-white font-bold text-sm flex-1 text-center">
+                {match.home_team.display_name}
+              </p>
+          
+              <div className="bg-[#CEFF00] text-black font-bold p-2 h-10 w-10 rounded-full mx-2 text-center">
+                vs
               </div>
-
-              <div className="flex justify-center">
-                <div className="bg-blue-600 text-white text-xs w-[150px] py-2 rounded-xl text-center">
-                  {formatDate(match.date)} 
-                </div>
+          
+              <p className="text-white font-bold text-sm flex-1 text-center">
+                {match.away_team.display_name}
+              </p>
+              <img
+                src={match.away_team.logo_url}
+                alt={`${match.away_team.name} logo`}
+                className="max-w-8 h-8"
+              />
+            </div>
+          
+            <div className="flex justify-center">
+              <div className="bg-blue-600 text-white text-xs w-[150px] py-2 rounded-xl text-center">
+                {formatDate(match.date)}
               </div>
             </div>
+          </div>
+          
           ))
         ) : (
           <p className="text-center text-gray-400">No contests available</p>
