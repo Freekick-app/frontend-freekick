@@ -38,7 +38,7 @@ const FootballMatches = () => {
     
     if (storedName && storedPassword) {
       axios
-        .get(`${backend_url}/api/sports/games`, {
+        .get(`${backend_url}/sports/games`, {
           headers: {
             Authorization: `Basic ${btoa(`${storedName}:${storedPassword}`)}`,
           },
