@@ -17,7 +17,10 @@ const PlaceBet = () => {
   const [questions, setQuestions] = useState<any[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<{ [key: number]: { id: string; text: string } }>({});
+  const [selectedOptions2, setSelectedOptions2] = useState<{ [key: number]: { id: string; text: string }[] }>({});
   const [betState, setBetState] = useState("initial");
+  const [gameDetails, setGameDetails] = useState<any>();
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const username = localStorage.getItem("username");
@@ -60,6 +63,10 @@ const PlaceBet = () => {
       );
 
       const questionsData = response.data;
+      questionsData?.questions.forEach((question: any) => {
+        console.log(`Question ID: ${question.id}, Question Type: ${question.question_type}`);
+      });
+      // console.log(questionsData);
       setPoolId(questionsData.pool_id);
       setQuestions(questionsData?.questions);
       setBetState("bet_started");
@@ -93,50 +100,117 @@ const PlaceBet = () => {
     }));
   };
 
-  const handleSubmitQuiz = async () => {
-    console.log("Submitting Quiz for Pool", poolId);
-    setTimeout(() => {
-      console.log("Quiz submitted");
-      setBetState("submitted");
-    }, 3000);
+  function handleOptionsSelect(questionId: number, options: { id: string; text: string }[]) {
+    setSelectedOptions2((prev) => ({
+      ...prev,
+      [questionId]: options
+    }))
+  }
+
+  const handleBackToHome = async () => {
+    console.log("Returing to quiz pages")
+    router.push("/")
   };
 
-  const handleSubmitAnswer = async (questionId: number, selected_option: { id: string; text: string }) => {
+  const handleSubmitAnswer = async (
+    questionId: number,
+    selected_options: { id: string; text: string }[],
+    question_type: string = "single_select"
+  ) => {
+    setLoading(true)
+    const orderedOptions = selected_options.map((option, index) => ({
+      id: option.id,
+      text: option.text,
+      ...(question_type === "ordered_multi_select" && { order: index + 1 }),
+    }));
+
     const payload = {
       pool_id: poolId,
       question_id: questionId,
-      selected_options: [{id: selected_option.id, text: selected_option.text}],
+      selected_options: orderedOptions,
     };
+
     console.log(payload);
+
     try {
       if (!authCredentials) {
         setError("Missing authentication credentials");
+        setLoading(false)
         return;
       }
-      const response = await fetch(`${backend_url}/pools/${poolId}/submit_answer/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Basic ${btoa(
-            `${authCredentials.username}:${authCredentials.password}`
-          )}`,
-        },
-        body: JSON.stringify(payload),
-      });
+
+      const response = await fetch(
+        `${backend_url}/pools/${poolId}/submit_answer/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Basic ${btoa(
+              `${authCredentials.username}:${authCredentials.password}`
+            )}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
       const data = await response.json();
-      
-      if (data.status == "success") {
+
+      if (data.status === "success") {
         console.log("Answer submitted");
         handleNext();
+        setError(null);
       } else {
         setError(data.error);
       }
     } catch (err) {
       console.error(err);
       setError("Failed to submit answer. Please try again.");
+    } finally {
+      setLoading(false)
     }
   };
+
+  const showGameDetails = async () => {
+    try {
+      if (!authCredentials) {
+        setError("Missing authentication credentials");
+        return;
+      }
+      const response = await fetch(
+        `${backend_url}/sports/games/${matchId}/`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Basic ${btoa(
+              `${authCredentials.username}:${authCredentials.password}`
+            )}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(`Error: ${errorData.message || "Failed to fetch game details"}`);
+        return;
+      }
+      const data = await response.json();
+      setGameDetails(data);
+      console.log(data);
+      setError(null);
+    } catch (error) {
+      setError("An error occurred while fetching game details");
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    if (matchId && authCredentials) {
+      showGameDetails();
+      console.log(gameDetails)
+    }
+  }, [matchId, authCredentials]);
+
 
   return (
     <div className="bg-black text-white flex items-center justify-center">
@@ -145,37 +219,69 @@ const PlaceBet = () => {
           poolId={poolId}
           questions={questions}
           currentQuestionIndex={currentQuestionIndex}
-          selectedOptions={selectedOptions}
-          handleNext={(questionId, option) => handleSubmitAnswer(questionId, selectedOptions[questionId])}
+          selectedOptions={selectedOptions2}
+          handleNext={(questionId, options, question_type) => handleSubmitAnswer(questionId, options, question_type)}
           handlePrevious={handlePrevious}
-          handleOptionSelect={handleOptionSelect}
+          handleOptionSelect={handleOptionsSelect}
+          loading={loading}
         />
       ) : betState === "submit" || betState === "submitted" ? (
         <div className="p-4 max-w-xl mx-auto text-center">
-          <h1 className="text-2xl font-bold">Submit Quiz for Pool {poolId}</h1>
+          <h1 className="text-2xl font-bold">You have completed the quiz!</h1>
           <button
-            onClick={handleSubmitQuiz}
-            className="mt-4 bg-[#1F1DFF] py-2 px-4 rounded-full text-white text-lg font-semibold"
+            onClick={handleBackToHome}
+            className="mt-4 bg-[#CEFF00] py-2 px-4 rounded-full text-black text-lg font-semibold"
           >
-            Submit Quiz
+            Place another bet?
           </button>
-          {betState === "submitted" && <p className="mt-4">Bet Submitted</p>}
-          {error && <p className="text-red-500 mt-4">{error}</p>}
         </div>
       ) : (
         <div className="p-4 max-w-xl mx-auto text-center">
-          <h1 className="text-2xl font-bold">Place Your Bet for Match {matchId}</h1>
-          <p className="mt-4">Bet Size: {betSize}</p>
-          <button
-            onClick={handlePlaceBet}
-            className="mt-4 bg-[#1F1DFF] py-2 px-4 rounded-full text-white text-lg font-semibold"
-          >
-            Place Bet
-          </button>
-          {error && <p className="text-red-500 mt-4">{error}</p>}
-        </div>
-      )}
-    </div>
+        {gameDetails ? (
+          <div className="bg-gray-800 py-4 px-4 space-y-2 items-center text-center rounded-[40px]">
+            <div className="flex justify-center items-center gap-1">
+              <img
+                src={gameDetails.home_team.logo_url}
+                alt="Home Team logo"
+                className="w-8 h-8"
+              />
+              <p className="text-white font-bold text-sm">
+                {gameDetails.home_team.display_name}
+              </p>
+              <div className="bg-[#CEFF00] text-black font-bold px-2 py-1 rounded-full text-center">
+                vs
+              </div>
+              <p className="text-white font-bold text-sm">
+                {gameDetails.away_team.display_name}
+              </p>
+              <img
+                src={gameDetails.away_team.logo_url}
+                alt="Away Team logo"
+                className="w-8 h-8"
+              />
+            </div>
+            <div className="flex justify-center">
+              <div className="bg-blue-600 text-white text-xs w-[150px] py-2 rounded-xl text-center">
+                {new Date(gameDetails.match_date).toLocaleDateString()}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p>Loading game details...</p>
+        )}
+
+        <h1 className="text-2xl font-bold">Place Your Bet for Match {matchId}</h1>
+        <p className="mt-4">Bet Size: {betSize}</p>
+        <button
+          onClick={handlePlaceBet}
+          className="mt-4 bg-[#CEFF00] py-2 px-4 rounded-full text-black text-lg font-semibold"
+        >
+          Place Bet
+        </button>
+        {error && <p className="text-red-500 mt-4">{error}</p>}
+      </div>
+    )}
+  </div>
   );
 };
 

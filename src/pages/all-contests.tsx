@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 interface Team {
   id: number;
   name: string;
@@ -24,6 +26,7 @@ const AllContests = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+
   useEffect(() => {
     const storedName = localStorage.getItem("username");
     const storedPassword = localStorage.getItem("password");
@@ -33,7 +36,7 @@ const AllContests = () => {
 
     if (storedName && storedPassword) {
       axios
-        .get("http://127.0.0.1:8000/api/sports/games", {
+        .get(`${backend_url}/sports/games`, {
           headers: {
             Authorization: `Basic ${btoa(`${storedName}:${storedPassword}`)}`,
           },

@@ -6,8 +6,6 @@
 import { BiWalletAlt } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 
-
-
 export default function Header() {
     return (
       <header className="flex items-center justify-between px-4 h-[80px] bg-black text-white">

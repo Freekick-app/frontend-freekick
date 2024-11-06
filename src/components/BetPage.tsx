@@ -48,12 +48,12 @@ export default function BetPage() {
     <div className="bg-black min-h-screen text-white">
       <main className="px-4  ">
         <section className="mb-2">
-          <div className="flex space-x-4 items-center justify-between">
+          <div className="flex  space-x-4 items-center justify-between">
             {sports.map((sport, index) => (
               <div
                 key={index}
                 onClick={() => setSelectedSport(sport.name)}
-                className="flex items-center cursor-pointer bg-gray-800 rounded-3xl"
+                className="flex items-center cursor-pointer bg-gray-800 rounded-3xl "
               >
                 <div
                   className={`p-2 rounded-full ${selectedSport === sport.name ? "bg-[#CEFF00]" : "bg-gray-800"}`}
