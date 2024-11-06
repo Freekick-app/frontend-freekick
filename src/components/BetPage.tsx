@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useState } from "react";
 import FootballMatches from "./Sports/football-matches";
@@ -7,10 +8,15 @@ import { FaFootballBall } from "react-icons/fa";
 import { MdOutlineSportsVolleyball } from "react-icons/md";
 import { IoIosFootball } from "react-icons/io";
 import { FaBasketballBall } from "react-icons/fa";
+import { Router, useRouter } from "next/router";
+
 
 
 export default function BetPage() {
   const [selectedSport, setSelectedSport] = useState("Football");
+
+
+  const router = useRouter();
 
   const sports = [
     { name: "Football", icon: <FaFootballBall /> },
@@ -33,6 +39,10 @@ export default function BetPage() {
         return null;
     }
   };
+
+  const handleSeeAll = () =>{
+    router.push('/all-contests')
+  }
 
   return (
     <div className="bg-black min-h-screen text-white">
@@ -67,7 +77,7 @@ export default function BetPage() {
         <section className="rounded-lg relative space-y-2 mt-4">
           <div className='flex items-center justify-between px-4'>
             <h2 className="text-xl font-bold">{selectedSport} Matches</h2>
-            <button className='bg-slate-800 p-2 px-4 rounded-full text-base'>See All</button>
+            <button className='bg-slate-800 p-2 px-4 rounded-full text-base' onClick={handleSeeAll}>See All</button>
           </div>
           {renderMatches()}
         </section>

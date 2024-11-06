@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useRouter } from "next/router";
+
+const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface Team {
   id: number;
@@ -24,23 +27,34 @@ const FootballMatches = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const router = useRouter();
+
   useEffect(() => {
     const storedName = localStorage.getItem("username");
     const storedPassword = localStorage.getItem("password");
 
     if (storedName) setName(storedName);
     if (storedPassword) setPassword(storedPassword);
-
+    
     if (storedName && storedPassword) {
       axios
-        .get("http://127.0.0.1:8000/api/sports/games", {
+        .get(`${backend_url}/api/sports/games`, {
           headers: {
             Authorization: `Basic ${btoa(`${storedName}:${storedPassword}`)}`,
           },
         })
         .then((response) => {
-          console.log("API response:", response.data);
-          setData(response.data);
+          const today = new Date();
+          const oneWeekFromToday = new Date();
+          oneWeekFromToday.setDate(today.getDate() + 7);
+
+          // Filter matches occurring within the next week
+          const filteredMatches = response.data.filter((match: Match) => {
+            const matchDate = new Date(match.date);
+            return matchDate >= today && matchDate <= oneWeekFromToday;
+          });
+
+          setData(filteredMatches);
         })
         .catch((error) => {
           setError("Failed to fetch data");
@@ -52,6 +66,10 @@ const FootballMatches = () => {
       setLoading(false);
     }
   }, []);
+
+  const handlePlaceBet = (matchId: number) => {
+    router.push(`/place-bet?matchId=${matchId}`);
+  };
 
   return (
     <div>
@@ -93,7 +111,8 @@ const FootballMatches = () => {
           </div>
 
           <div className="mt-4">
-            <button className="w-full bg-[#1F1DFF] py-6 rounded-full text-white text-lg font-semibold">Place a Bet</button>
+            <button className="w-full bg-[#1F1DFF] py-6 rounded-full text-white text-lg font-semibold"
+             onClick={() => handlePlaceBet(match.id)}>Place a Bet</button>
           </div>
         </div>
       ))}

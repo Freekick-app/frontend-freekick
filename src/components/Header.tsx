@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // import { BiMenuAltRight } from "react-icons/bi";
 // import { RiWallet3Fill } from "react-icons/ri";
 // import { FaWallet } from "react-icons/fa";
 // import { CiWallet } from "react-icons/ci";
 import { BiWalletAlt } from "react-icons/bi";
+import { IoMdNotificationsOutline } from "react-icons/io";
+
 
 
 export default function Header() {
@@ -12,7 +15,10 @@ export default function Header() {
           <div className="rounded-full w-14 h-14 bg-gray-500"></div>
           <span className="text-lg">Hello, Username</span>
         </div>
-        <button className="text-white text-2xl p-2 bg-slate-900 rounded-full"><BiWalletAlt /></button>
+        <div className="flex gap-2">
+        <button className="text-3xl"><IoMdNotificationsOutline/></button>
+        <button className="text-white text-2xl px-3 py-2 bg-slate-800 rounded-full"><BiWalletAlt /></button>
+        </div>
       </header>
     );
   }

@@ -1,3 +1,4 @@
+
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
 import "@/styles/globals.css";
@@ -24,11 +25,11 @@ export default function App({ Component, pageProps }: AppProps) {
           <Header />
         </div>}
         
-        <div className=" items-center justify-center pt-24">
+        <div className=" items-center justify-center pt-24 pb-20">
           <Component {...pageProps} />
         </div>
 
-        {!ignoreLayoutPaths.includes(router.pathname) && <div className="fixed bottom-0 w-full z-10">
+        {!ignoreLayoutPaths.includes(router.pathname) && <div className="fixed bottom-0 w-full z-10  bg-opacity-50">
           <Navbar />
         </div>}
       </div>

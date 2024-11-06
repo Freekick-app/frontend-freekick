@@ -1,10 +1,11 @@
 import { FiHome } from "react-icons/fi";
 // import { GrSchedule } from "react-icons/gr";
-import { IoIosNotificationsOutline } from "react-icons/io";
+// import { IoIosNotificationsOutline } from "react-icons/io";
 import { IoSettingsOutline } from "react-icons/io5";
 import { SlCalender } from "react-icons/sl";
 import Link from "next/link";
 import { useRouter } from 'next/router';
+import { GoGift } from "react-icons/go";
 
 export default function Navbar() {
   const router = useRouter();
@@ -16,17 +17,18 @@ export default function Navbar() {
   
 
     return (
+      
         <footer className="flex justify-between items-center w-[320px]  h-[80px] text-black bg-gray-900 p-4 text-2xl rounded-[4rem] fixed bottom-[10px] left-1/2 transform -translate-x-1/2">
       
         <button  className="w-12 h-12 flex items-center justify-center rounded-full bg-[#CEFF00] ">
-          <Link href="/index"><FiHome /></Link>
+          <Link href="/"><FiHome /></Link>
           
         </button>
         <button onClick={handleMyMatches} className="w-12 h-12 flex items-center justify-center rounded-full bg-[#CEFF00]">
         <SlCalender/>
         </button>
         <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#CEFF00]">
-        <IoIosNotificationsOutline/>
+        <GoGift/>
         </div>
         <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#CEFF00]">
         <IoSettingsOutline/>
