@@ -20,6 +20,7 @@ const PlaceBet = () => {
   const [selectedOptions2, setSelectedOptions2] = useState<{ [key: number]: { id: string; text: string }[] }>({});
   const [betState, setBetState] = useState("initial");
   const [gameDetails, setGameDetails] = useState<any>();
+  const [timeLeft, setTimeLeft] = useState<string>('');
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -212,6 +213,34 @@ const PlaceBet = () => {
   }, [matchId, authCredentials]);
 
 
+
+  useEffect(() => {
+    if (gameDetails?.date) {
+      const matchDate = new Date(gameDetails.date);
+
+      const updateTimer = () => {
+        const now = new Date();
+        const diff = matchDate.getTime() - now.getTime();
+
+        if (diff <= 0) {
+          setTimeLeft("Match has started");
+        } else {
+          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+          const minutes = Math.floor((diff / (1000 * 60)) % 60);
+          const seconds = Math.floor((diff / 1000) % 60);
+          setTimeLeft(`${hours}h ${minutes}m ${seconds}s left`);
+        }
+      };
+
+      updateTimer();
+      const timer = setInterval(updateTimer, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [gameDetails?.date]);
+
+
+
   return (
     <div className="bg-black text-white flex items-center justify-center">
       {betState === "bet_started" && questions && questions.length > 0 ? (
@@ -236,52 +265,62 @@ const PlaceBet = () => {
           </button>
         </div>
       ) : (
-        <div className="p-4 max-w-xl mx-auto text-center">
-        {gameDetails ? (
-          <div className="bg-gray-800 py-4 px-4 space-y-2 items-center text-center rounded-[40px]">
-            <div className="flex justify-center items-center gap-1">
-              <img
-                src={gameDetails.home_team.logo_url}
-                alt="Home Team logo"
-                className="w-8 h-8"
-              />
-              <p className="text-white font-bold text-sm">
-                {gameDetails.home_team.display_name}
-              </p>
-              <div className="bg-[#CEFF00] text-black font-bold px-2 py-1 rounded-full text-center">
-                vs
+        <div className="px-4  max-w-xl mx-auto text-center">
+          {gameDetails ? (
+            <div className="bg-gray-800 py-4 px-4 space-y-2 items-center text-center rounded-[40px]">
+              <div className="flex justify-center items-center gap-1">
+                <img
+                  src={gameDetails.home_team.logo_url}
+                  alt="Home Team logo"
+                  className="w-8 h-8"
+                />
+                <p className="text-white font-bold text-sm">
+                  {gameDetails.home_team.display_name}
+                </p>
+                <div className="bg-[#CEFF00] text-black font-bold px-2 py-1 rounded-full text-center">
+                  vs
+                </div>
+                <p className="text-white font-bold text-sm">
+                  {gameDetails.away_team.display_name}
+                </p>
+                <img
+                  src={gameDetails.away_team.logo_url}
+                  alt="Away Team logo"
+                  className="w-8 h-8"
+                />
               </div>
-              <p className="text-white font-bold text-sm">
-                {gameDetails.away_team.display_name}
-              </p>
-              <img
-                src={gameDetails.away_team.logo_url}
-                alt="Away Team logo"
-                className="w-8 h-8"
-              />
-            </div>
-            <div className="flex justify-center">
-              <div className="bg-blue-600 text-white text-xs w-[150px] py-2 rounded-xl text-center">
-                {new Date(gameDetails.match_date).toLocaleDateString()}
+              <div className="flex justify-center">
+                <div className="bg-blue-600 text-white text-xs w-[150px] py-2 rounded-xl text-center">
+                  {timeLeft}
+                </div>
               </div>
             </div>
+          ) : (
+            <p>Loading game details...</p>
+          )}
+          <hr className="m-2" />
+          <div className="bg-gray-800 p-4 rounded-3xl">
+            {/* <h1 className="text-2xl font-bold">Place Your Bet for Match {matchId}</h1> */}
+            <div className="flex justify-between font-bold  text-center ">
+              <div className="flex flex-col items-start">
+              <h1>Prize Pool</h1>
+              <h1 className="text-xl">$100</h1>
+              </div>
+              
+              <button className="bg-blue-500 rounded-xl px-2 text-center text-base items-center ">Bet Size: ${betSize}</button>
+            </div>
+            
+            <button
+              onClick={handlePlaceBet}
+              className="mt-4 bg-[#CEFF00] py-2 px-4 rounded-full text-black text-lg font-semibold"
+            >
+              Place Bet
+            </button>
+            {error && <p className="text-red-500 mt-4">{error}</p>}
           </div>
-        ) : (
-          <p>Loading game details...</p>
-        )}
-
-        <h1 className="text-2xl font-bold">Place Your Bet for Match {matchId}</h1>
-        <p className="mt-4">Bet Size: {betSize}</p>
-        <button
-          onClick={handlePlaceBet}
-          className="mt-4 bg-[#CEFF00] py-2 px-4 rounded-full text-black text-lg font-semibold"
-        >
-          Place Bet
-        </button>
-        {error && <p className="text-red-500 mt-4">{error}</p>}
-      </div>
-    )}
-  </div>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -19,10 +19,10 @@ interface QuestionsProps {
     questions: Question[];
     currentQuestionIndex: number;
     selectedOptions: { [key: number]: Option[] };
-    handleNext: (questionId: number, selectedOptions: Option[], question_type:string) => void;
+    handleNext: (questionId: number, selectedOptions: Option[], question_type: string) => void;
     handlePrevious: () => void;
     handleOptionSelect: (questionId: number, options: Option[]) => void;
-    loading:boolean;
+    loading: boolean;
 }
 
 const Questions: React.FC<QuestionsProps> = ({
@@ -39,14 +39,14 @@ const Questions: React.FC<QuestionsProps> = ({
     const { question_type, options } = currentQuestion;
 
     const handleOptionClick = (option: Option, question_type: string) => {
-        if(["single_select", "number_range"].includes(question_type)) {
+        if (["single_select", "number_range"].includes(question_type)) {
             handleOptionSelect(currentQuestion.id, [option]);
-            
-        } else if (["multi_select", "ordered_multi_select"].includes(question_type)){
+
+        } else if (["multi_select", "ordered_multi_select"].includes(question_type)) {
             const selected = selectedOptions[currentQuestion.id] || []
-            const checkIfSelected =   selected?.find((selectedOption) => selectedOption.id === option.id);
-            let newSelected  = selected ?? []
-            if(checkIfSelected){
+            const checkIfSelected = selected?.find((selectedOption) => selectedOption.id === option.id);
+            let newSelected = selected ?? []
+            if (checkIfSelected) {
                 newSelected = selected.filter((selectedOption) => selectedOption.id !== option.id);
             } else {
                 newSelected = [...selected, option];
@@ -73,47 +73,50 @@ const Questions: React.FC<QuestionsProps> = ({
                 Question {currentQuestionIndex + 1}: {currentQuestion.text} <span>{`(${question_type})`}</span>
             </h2>
             <div className="space-y-3">
-                {options && options.map((option) =>{ 
-                    
+                {options && options.map((option) => {
+
                     const disabled = ["ordered_multi_select", "multi_select"].includes(question_type) &&
-                    selectedOptions &&
-                    selectedOptions[currentQuestion.id]?.length >= 3 &&
-                    !selectedOptions[currentQuestion.id].find((selectedOption) => selectedOption.id === option.id)
+                        selectedOptions &&
+                        selectedOptions[currentQuestion.id]?.length >= 3 &&
+                        !selectedOptions[currentQuestion.id].find((selectedOption) => selectedOption.id === option.id)
 
                     return (
-                    
-             
-                    <button
-                        key={option.id}
-                        // disabled={!!(["ordered_multi_select", "multi_select"].includes(question_type) && selectedOptions && (selectedOptions[currentQuestion.id] || [])?.find((selectedOption) => selectedOption.id != option.id && ((selectedOptions[currentQuestion.id] || [])?.length>=3)))}
-                        disabled={disabled}
-                        onClick={() => handleOptionClick(option, question_type)}
-                        className={` ${disabled?"cursor-not-allowed":"cursor-pointer hover:bg-blue-500"}  w-full flex flex-row items-center gap-1 py-2 px-4 rounded-lg ${selectedOptions && (selectedOptions[currentQuestion.id] || [])?.find((selectedOption) => selectedOption.id === option.id)
-                            ? "bg-blue-600"
-                            : "bg-gray-700"
-                            }  transition-colors duration-200`}
-                    >
-                        <p>{option.text}</p>
-                        {question_type ==="ordered_multi_select" && selectedOptions && (selectedOptions[currentQuestion.id] || [])?.find((selectedOption) => selectedOption.id === option.id) && <p className="bg-black rounded-full w-6 h-6 flex justify-center items-center">
-                            {
-                    selectedOptions[currentQuestion.id].findIndex(
-                        (selectedOption) => selectedOption.id === option.id
-                    ) + 1 
-                }
+
+
+                        <button
+                            key={option.id}
+                            // disabled={!!(["ordered_multi_select", "multi_select"].includes(question_type) && selectedOptions && (selectedOptions[currentQuestion.id] || [])?.find((selectedOption) => selectedOption.id != option.id && ((selectedOptions[currentQuestion.id] || [])?.length>=3)))}
+                            disabled={disabled}
+                            onClick={() => handleOptionClick(option, question_type)}
+                            className={` ${disabled ? "cursor-not-allowed" : "cursor-pointer hover:bg-blue-500"}  w-full flex flex-row items-center gap-1 py-2 px-4 rounded-lg ${selectedOptions && (selectedOptions[currentQuestion.id] || [])?.find((selectedOption) => selectedOption.id === option.id)
+                                ? "bg-blue-600"
+                                : "bg-gray-700"
+                                }  transition-colors duration-200`}
+                        >
+                            <p>{option.text}</p>
+                            {question_type === "ordered_multi_select" && selectedOptions && (selectedOptions[currentQuestion.id] || [])?.find((selectedOption) => selectedOption.id === option.id) && <p className="bg-black rounded-full w-6 h-6 flex justify-center items-center">
+                                {
+                                    selectedOptions[currentQuestion.id].findIndex(
+                                        (selectedOption) => selectedOption.id === option.id
+                                    ) + 1
+                                }
                             </p>}
-                    </button>
-                )}
+                        </button>
+                    )
+                }
                 )}
             </div>
             <div className="mt-6 flex justify-center">
                 <button
                     onClick={handleNextClick}
                     disabled={loading}
-                    className="bg-[#CEFF00] text-black w-full py-2 px-4 rounded-lg"
+                    className={`w-full py-2 px-4 rounded-lg ${loading ? "bg-gray-400 text-gray-600 cursor-not-allowed" : "bg-[#CEFF00] text-black "
+                        }`}
                 >
                     {currentQuestionIndex === questions.length - 1 ? "Submit" : "Next"}
                 </button>
             </div>
+
         </div>
     );
 };
