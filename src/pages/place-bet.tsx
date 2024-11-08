@@ -144,15 +144,16 @@ const PlaceBet = () => {
 
       const response = await axiosInstance.post(
         `/pools/${poolId}/submit_answer/`,
+        payload,
         {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          body: JSON.stringify(payload),
+          // body: JSON.stringify(payload),
         }
       );
-
+     
       const data = await response.data
 
       if (data.status === "success") {
