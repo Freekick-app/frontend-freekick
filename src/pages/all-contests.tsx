@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
 import axios from "axios";
+import axiosInstance from "@/utils/axios";
 
-const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface Team {
   id: number;
@@ -35,10 +35,10 @@ const AllContests = () => {
     if (storedPassword) setPassword(storedPassword);
 
     if (storedName && storedPassword) {
-      axios
-        .get(`${backend_url}/sports/games`, {
+      axiosInstance
+        .get(`/sports/games`, {
           headers: {
-            Authorization: `Basic ${btoa(`${storedName}:${storedPassword}`)}`,
+            // Authorization: `Basic ${btoa(`${storedName}:${storedPassword}`)}`,
           },
         })
         .then((response) => {

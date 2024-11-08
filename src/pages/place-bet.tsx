@@ -4,8 +4,8 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import Questions from "@/components/Questions/questions";
+import axiosInstance from "@/utils/axios";
 
-const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const PlaceBet = () => {
   const router = useRouter();
@@ -46,8 +46,8 @@ const PlaceBet = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${backend_url}/pools/place_bet/`,
+      const response = await axiosInstance.post(
+        `/pools/place_bet/`,
         {
           game_id: matchId,
           bet_size: betSize,
@@ -56,14 +56,16 @@ const PlaceBet = () => {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            Authorization: `Basic ${btoa(
-              `${authCredentials.username}:${authCredentials.password}`
-            )}`,
+            // Authorization: `Basic ${btoa(
+            //   `${authCredentials.username}:${authCredentials.password}`
+            // )}`,
           },
         }
       );
 
-      const questionsData = response.data;
+      const questionsData = await response.data;
+
+      console.log(questionsData, "response")
       questionsData?.questions.forEach((question: any) => {
         console.log(`Question ID: ${question.id}, Question Type: ${question.question_type}`);
       });
@@ -140,22 +142,18 @@ const PlaceBet = () => {
         return;
       }
 
-      const response = await fetch(
-        `${backend_url}/pools/${poolId}/submit_answer/`,
+      const response = await axiosInstance.post(
+        `/pools/${poolId}/submit_answer/`,
         {
-          method: "POST",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            Authorization: `Basic ${btoa(
-              `${authCredentials.username}:${authCredentials.password}`
-            )}`,
           },
           body: JSON.stringify(payload),
         }
       );
 
-      const data = await response.json();
+      const data = await response.data
 
       if (data.status === "success") {
         console.log("Answer submitted");
@@ -178,25 +176,22 @@ const PlaceBet = () => {
         setError("Missing authentication credentials");
         return;
       }
-      const response = await fetch(
-        `${backend_url}/sports/games/${matchId}/`,
+      const response = await axiosInstance.get(
+        `/sports/games/${matchId}/`,
         {
-          method: "GET",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            Authorization: `Basic ${btoa(
-              `${authCredentials.username}:${authCredentials.password}`
-            )}`,
+
           },
         }
       );
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (response.status !==200) {
+        const errorData = response.data
         setError(`Error: ${errorData.message || "Failed to fetch game details"}`);
         return;
       }
-      const data = await response.json();
+      const data = await response.data
       setGameDetails(data);
       console.log(data);
       setError(null);

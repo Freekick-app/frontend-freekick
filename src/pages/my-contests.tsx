@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FaMoneyBill } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "@/utils/axios";
 
 interface Team {
   id: number;
@@ -33,8 +33,8 @@ const MyContests = () => {
     if (storedPassword) setPassword(storedPassword);
 
     if (storedName && storedPassword) {
-      axios
-        .get("http://127.0.0.1:8000/api/sports/games", {
+      axiosInstance
+        .get("/sports/games", {
           headers: {
             Authorization: `Basic ${btoa(`${storedName}:${storedPassword}`)}`,
           },
