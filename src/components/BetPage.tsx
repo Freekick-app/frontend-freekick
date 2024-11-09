@@ -46,9 +46,9 @@ export default function BetPage() {
 
   return (
     <div className="bg-black min-h-screen text-white">
-      <main className="px-4  ">
-        <section className="mb-2">
-          <div className="flex    space-x-4 items-center justify-between">
+      <main className="px-2">
+        <section className="mb-1">
+          <div className="flex  items-center justify-between">
             {sports.map((sport, index) => (
               <div
                 key={index}
@@ -59,14 +59,14 @@ export default function BetPage() {
                   className={`p-2 rounded-full ${selectedSport === sport.name ? "bg-[#CEFF00]" : "bg-gray-800"}`}
                 >
                   <span
-                    className={`text-[32px] items-center justify-between flex ${selectedSport === sport.name ? "text-black" : "text-gray-400"}`}
+                    className={`text-[18px] items-center justify-between  flex ${selectedSport === sport.name ? "text-black" : "text-gray-400"}`}
                   >
                     {sport.icon}
                   </span>
                 </div>
                 {selectedSport === sport.name && (
-                  <div className="px-4 py-1 rounded-full">
-                    <span className="text-white font-semibold">{sport.name}</span>
+                  <div className="px-2 py-1 rounded-full">
+                    <span className="text-white font-normal text-xs">{sport.name}</span>
                   </div>
                 )}
               </div>
@@ -76,8 +76,8 @@ export default function BetPage() {
 
         <section className="rounded-lg relative space-y-2 ">
           <div className='flex items-center justify-between px-4'>
-            <h2 className="text-xl font-bold">{selectedSport} Matches</h2>
-            <button className='bg-slate-800 p-2 px-4 rounded-full text-base' onClick={handleSeeAll}>See All</button>
+            <h2 className="text-[12px] font-bold">{selectedSport} Matches</h2>
+            <button className='bg-slate-800 p-2 px-4 rounded-full text-[10px]' onClick={handleSeeAll}>See All</button>
           </div>
           {renderMatches()}
         </section>

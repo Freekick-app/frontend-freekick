@@ -8,7 +8,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import LoginButton from "./LoginButton";
 export default function Header() {
     return (
-      <header className="flex flex-row items-center justify-between px-4 h-[60px]  bg-black text-white">
+      <header className="flex flex-row items-center justify-between px-1 h-[60px]  bg-black text-white">
         <div className="flex items-center space-x-4">
           <div className="rounded-full w-8 h-8 bg-gray-500"></div>
           <span className="text-[12px]">Hello, Username</span>

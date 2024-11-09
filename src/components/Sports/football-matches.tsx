@@ -92,38 +92,38 @@ const FootballMatches = () => {
       {error && <p className="text-red-500">{error}</p>}
 
       {data.map((match) => (
-        <div key={match.id} className="bg-gray-800 w-full rounded-2xl h-[100px]   p-1 my-4 relative z-0">
+        <div key={match.id} className="bg-gray-800 w-full rounded-2xl h-[70px] p-1 my-4 relative z-0">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <img
                 src={match.home_team.logo_url}
                 alt={match.home_team.name}
-                className="rounded-full max-w-[60px] h-[60px]"
+                className="rounded-full max-w-[40px] h-[40px]"
               />
-              <div className="text-white font-semibold text-sm ml-1 ">
+              <div className="text-white font-semibold text-[10px] ml-4 ">
                 {getLastWord(match.home_team.display_name)}
               </div>
             </div>
 
-            <div className="text-center absolute inset-x-0 text-gray-400 text-[10px] flex flex-col justify-center items-center">
+            <div className="text-center absolute inset-x-0 text-gray-400 text-[8px] flex flex-col justify-center items-center">
               <div>{formatDate(match.date)}</div> 
               <div>{formatTime(match.date)}</div> 
             </div>
 
             <div className="flex items-center">
-              <div className="text-white font-semibold text-sm mr-1 ">
+              <div className="text-white font-semibold text-[10px] mr-4 ">
                 {getLastWord(match.away_team.display_name)}
               </div>
               <img
                 src={match.away_team.logo_url}
                 alt={match.away_team.name}
-                className="rounded-full max-w-[60px] h-[60px]"
+                className="rounded-full max-w-[40px] h-[40px]"
               />
             </div>
           </div>
-          <div className="flex items-center justify-center z-10 absolute inset-x-0 top-[70px]">
+          <div className="flex items-center justify-center z-10 absolute inset-x-0 top-[45px]">
           <button
-            className="  bg-blue-600 py-2 rounded-full px-8  text-white text-sm font-semibold"
+            className="  bg-blue-600 py-2 rounded-full px-8  text-white text-[10px] font-semibold"
             onClick={() => handlePlaceBet(match.id)}
           >
             Play Now

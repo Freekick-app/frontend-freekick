@@ -11,26 +11,26 @@ export default function Navbar() {
   const router = useRouter();
 
   const handleMyMatches = () => {
-    router.push('/MyMatches'); 
+    router.push('/my-contests'); 
   };
 
   
 
     return (
       
-        <footer className="flex justify-between items-center w-[320px]  h-[80px] text-black bg-gray-900 p-4 text-2xl rounded-[4rem] fixed bottom-[10px] left-1/2 transform -translate-x-1/2">
+        <footer className="flex justify-between items-center w-[320px]  h-[40px] text-black bg-gray-900 px-4 py-6 text-2xl rounded-[4rem] fixed bottom-[10px] left-1/2 transform -translate-x-1/2">
       
-        <button  className="w-12 h-12 flex items-center justify-center rounded-full bg-[#CEFF00] ">
+        <button  className="w-8 h-8 flex items-center justify-center rounded-full bg-[#CEFF00] ">
           <Link href="/"><FiHome /></Link>
           
         </button>
-        <button onClick={handleMyMatches} className="w-12 h-12 flex items-center justify-center rounded-full bg-[#CEFF00]">
+        <button onClick={handleMyMatches} className="w-8 h-8  flex items-center justify-center rounded-full bg-[#CEFF00]">
         <SlCalender/>
         </button>
-        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#CEFF00]">
+        <div className="w-8 h-8  flex items-center justify-center rounded-full bg-[#CEFF00]">
         <GoGift/>
         </div>
-        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#CEFF00]">
+        <div className="w-8 h-8  flex items-center justify-center rounded-full bg-[#CEFF00]">
         <IoSettingsOutline/>
         </div>
       </footer>
