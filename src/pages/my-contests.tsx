@@ -2,6 +2,7 @@
 import { FaMoneyBill } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axios";
+import { AuthService } from "@/services/auth";
 
 interface Team {
   id: number;
@@ -26,17 +27,17 @@ const MyContests = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const storedName = localStorage.getItem("username");
-    const storedPassword = localStorage.getItem("password");
+    // const storedName = localStorage.getItem("username");
+    // const storedPassword = localStorage.getItem("password");
 
-    if (storedName) setName(storedName);
-    if (storedPassword) setPassword(storedPassword);
-
-    if (storedName && storedPassword) {
+    // if (storedName) setName(storedName);
+    // if (storedPassword) setPassword(storedPassword);
+    const token = AuthService.getAccessToken();
+    if (token) {
       axiosInstance
         .get("/sports/games", {
           headers: {
-            Authorization: `Basic ${btoa(`${storedName}:${storedPassword}`)}`,
+            Authorization: `Bearer ${token}`
           },
         })
         .then((response) => {

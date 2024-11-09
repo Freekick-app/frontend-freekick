@@ -5,7 +5,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import Questions from "@/components/Questions/questions";
 import axiosInstance from "@/utils/axios";
-
+import { AuthService } from "@/services/auth";
 
 const PlaceBet = () => {
   const router = useRouter();
@@ -13,7 +13,7 @@ const PlaceBet = () => {
   const [poolId, setPoolId] = useState<string | undefined>();
   const [betSize] = useState<number>(10);
   const [error, setError] = useState<string | null>(null);
-  const [authCredentials, setAuthCredentials] = useState<{ username: string; password: string } | null>(null);
+  const [authCredentials, setAuthCredentials] = useState<{ token:string} | null>(null);
   const [questions, setQuestions] = useState<any[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<{ [key: number]: { id: string; text: string } }>({});
@@ -24,10 +24,11 @@ const PlaceBet = () => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const username = localStorage.getItem("username");
-    const password = localStorage.getItem("password");
-    if (username && password) {
-      setAuthCredentials({ username, password });
+    const token  = AuthService.getAccessToken();
+    // const username = localStorage.getItem("username");
+    // const password = localStorage.getItem("password");
+    if (token) {
+      setAuthCredentials({token});
     } else {
       setError("Missing authentication credentials");
     }
@@ -56,9 +57,7 @@ const PlaceBet = () => {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            // Authorization: `Basic ${btoa(
-            //   `${authCredentials.username}:${authCredentials.password}`
-            // )}`,
+            Authorization: `Bearer ${authCredentials.token}`,
           },
         }
       );
