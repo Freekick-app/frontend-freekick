@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { AuthService } from '../services/auth';
 
+const backend_url = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api'
 // Create axios instance
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api',
+  baseURL: backend_url,
 });
 
 // Request interceptor to add token to every request
@@ -54,6 +55,11 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const axiosInstanceWithoutAuth = axios.create({
+  baseURL: backend_url,
+});
+
 
 
 export default axiosInstance;

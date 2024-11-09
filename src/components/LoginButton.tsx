@@ -9,18 +9,18 @@ export default function LoginButton() {
   const [error, setError] = useState<string | null>(null);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Fetch the current wallet address if already logged in
-    const fetchWalletAddress = async () => {
-      const web3Auth = Web3AuthService.getInstance();
-      const address = await web3Auth.getCurrentWalletAddress();
-      if (address) setWalletAddress(address);
-    };
+  // useEffect(() => {
+  //   // Fetch the current wallet address if already logged in
+  //   const fetchWalletAddress = async () => {
+  //     const web3Auth = Web3AuthService.getInstance();
+  //     const address = await web3Auth.getCurrentWalletAddress();
+  //     if (address) setWalletAddress(address);
+  //   };
 
-    if (Web3AuthService) {
-      setTimeout(fetchWalletAddress, 10);
-    }
-  }, []);
+  //   if (Web3AuthService) {
+  //     setTimeout(fetchWalletAddress, 10);
+  //   }
+  // }, []);
 
   const handleLogin = async () => {
     setIsLoading(true);

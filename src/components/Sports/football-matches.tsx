@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axiosInstance from "@/utils/axios";
+import {axiosInstanceWithoutAuth} from "@/utils/axios";
 import { useRouter } from "next/router";
 import { AuthService } from "@/services/auth";
 
@@ -25,13 +25,10 @@ const FootballMatches = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const token = AuthService.getAccessToken();
-
-    if (token) {
-      axiosInstance
+    axiosInstanceWithoutAuth
         .get(`/sports/games`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            // Authorization: `Bearer ${token}`,
           },
         })
         .then((response) => {
@@ -52,10 +49,6 @@ const FootballMatches = () => {
           console.error("Fetch error:", error);
         })
         .finally(() => setLoading(false));
-    } else {
-      setError("Missing credentials");
-      setLoading(false);
-    }
   }, []);
 
   const handlePlaceBet = (matchId: number) => {

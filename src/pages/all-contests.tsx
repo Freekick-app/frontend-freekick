@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
 import axios from "axios";
-import axiosInstance from "@/utils/axios";
+import {axiosInstanceWithoutAuth} from "@/utils/axios";
 import { AuthService } from "@/services/auth";
+
 
 
 interface Team {
@@ -29,16 +30,9 @@ const AllContests = () => {
 
 
   useEffect(() => {
-    const token = AuthService.getAccessToken();
-
-    // if (storedName) setName(storedName);
-    // if (storedPassword) setPassword(storedPassword);
-
-    if (token) {
-      axiosInstance
-        .get(`/sports/games`, {
+    axiosInstanceWithoutAuth.get(`/sports/games`, {
           headers: {
-            Authorization: `Bearer ${token}`
+            // Authorization: `Bearer ${token}`
           },
         })
         .then((response) => {
@@ -49,11 +43,8 @@ const AllContests = () => {
           console.log(error);
         })
         .finally(() => setLoading(false));
-    } else {
-      setError("Missing credentials");
-      setLoading(false);
-    }
-  }, []);
+      }
+    ,[]);
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
