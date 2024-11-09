@@ -18,19 +18,19 @@ export default function Navbar() {
 
     return (
       
-        <footer className="flex justify-between items-center w-[320px]  h-[40px] text-black bg-gray-900 px-4 py-6 text-2xl rounded-[4rem] fixed bottom-[10px] left-1/2 transform -translate-x-1/2">
+        <footer className="flex justify-between items-center w-[300px]  h-[40px] text-black bg-gray-900 px-4 py-8 text-2xl rounded-[4rem] fixed bottom-[10px] left-1/2 transform -translate-x-1/2">
       
-        <button  className="w-8 h-8 flex items-center justify-center rounded-full bg-[#CEFF00] ">
+        <button  className="w-10 h-10 flex items-center justify-center rounded-full bg-[#CEFF00] ">
           <Link href="/"><FiHome /></Link>
           
         </button>
-        <button onClick={handleMyMatches} className="w-8 h-8  flex items-center justify-center rounded-full bg-[#CEFF00]">
+        <button onClick={handleMyMatches} className="w-10 h-10 flex items-center justify-center rounded-full bg-[#CEFF00]">
         <SlCalender/>
         </button>
-        <div className="w-8 h-8  flex items-center justify-center rounded-full bg-[#CEFF00]">
+        <div className="w-10 h-10  flex items-center cursor-pointer justify-center rounded-full bg-[#CEFF00]">
         <GoGift/>
         </div>
-        <div className="w-8 h-8  flex items-center justify-center rounded-full bg-[#CEFF00]">
+        <div className="w-10 h-10  flex items-center cursor-pointer justify-center rounded-full bg-[#CEFF00]">
         <IoSettingsOutline/>
         </div>
       </footer>

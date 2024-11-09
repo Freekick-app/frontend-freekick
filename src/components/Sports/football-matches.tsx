@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
 import {axiosInstanceWithoutAuth} from "@/utils/axios";
 import { useRouter } from "next/router";
@@ -83,17 +84,17 @@ const FootballMatches = () => {
     <div>
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
-
+    <div className="flex flex-col gap-2">
       {data.map((match) => (
-        <div key={match.id} className="bg-gray-800 w-full rounded-2xl h-[70px] p-1 my-4 relative z-0">
+        <div key={match.id} className="bg-gray-700 w-full rounded-2xl h-[70px] p-1 my-4 relative z-0">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <img
                 src={match.home_team.logo_url}
                 alt={match.home_team.name}
-                className="rounded-full max-w-[40px] h-[40px]"
+                className="rounded-full  h-[60px]"
               />
-              <div className="text-white font-semibold text-[10px] ml-4 ">
+              <div className="text-white font-semibold text-[12px] ml-4 ">
                 {getLastWord(match.home_team.display_name)}
               </div>
             </div>
@@ -104,17 +105,17 @@ const FootballMatches = () => {
             </div>
 
             <div className="flex items-center">
-              <div className="text-white font-semibold text-[10px] mr-4 ">
+              <div className="text-white font-semibold text-[12px] mr-4 ">
                 {getLastWord(match.away_team.display_name)}
               </div>
               <img
                 src={match.away_team.logo_url}
                 alt={match.away_team.name}
-                className="rounded-full max-w-[40px] h-[40px]"
+                className="rounded-full  h-[60px]"
               />
             </div>
           </div>
-          <div className="flex items-center justify-center z-10 absolute inset-x-0 top-[45px]">
+          <div className="flex items-center justify-center z-10 absolute inset-x-0 top-[50px]">
           <button
             className="  bg-blue-600 py-2 rounded-full px-8  text-white text-[10px] font-semibold"
             onClick={() => handlePlaceBet(match.id)}
@@ -125,6 +126,7 @@ const FootballMatches = () => {
          
         </div>
       ))}
+    </div>
     </div>
   );
 };

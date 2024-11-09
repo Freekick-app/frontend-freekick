@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from 'react';
 import { Web3AuthService } from '../services/web3Auth';
 import { AuthService } from '../services/auth';

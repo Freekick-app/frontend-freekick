@@ -9,6 +9,9 @@ import { MdOutlineSportsVolleyball } from "react-icons/md";
 import { IoIosFootball } from "react-icons/io";
 import { FaBasketballBall } from "react-icons/fa";
 import { Router, useRouter } from "next/router";
+import VollyballMatches from "./Sports/vollyball-matches";
+import SocerMatches from "./Sports/socer-matches";
+import BasketballMatches from "./Sports/basketball-matches";
 
 
 
@@ -19,10 +22,28 @@ export default function BetPage() {
   const router = useRouter();
 
   const sports = [
-    { name: "Football", icon: <FaFootballBall /> },
-    { name: "Volleyball", icon: <MdOutlineSportsVolleyball /> },
-    { name: "Soccer", icon: <IoIosFootball /> },
-    { name: "Basketball", icon: <FaBasketballBall /> },
+    { name: "Football", icon: <FaFootballBall />,
+      logo: "./nflLogo2.png", 
+      league: "NFL" 
+     },
+     { 
+      name: "Volleyball", 
+      icon: <MdOutlineSportsVolleyball />, 
+      logo: "./volleyballLogo.png", 
+      league: "FIVB" 
+    },
+    { 
+      name: "Soccer", 
+      icon: <IoIosFootball />, 
+      logo: "./soccerLogo.png", 
+      league: "FIFA" 
+    },
+    { 
+      name: "Basketball", 
+      icon: <FaBasketballBall />, 
+      logo: "./nbaLogo.png", 
+      league: "NBA" 
+    },
   ];
 
   const renderMatches = () => {
@@ -30,11 +51,11 @@ export default function BetPage() {
       case "Football":
         return <FootballMatches />;
       case "Volleyball":
-        return <div>volleyball</div>;
+        return <div><VollyballMatches/></div>;
       case "Soccer":
-        return <div>soccer</div>;
+        return <div><SocerMatches/></div>;
       case "Basketball":
-        return <div>basketball</div>;
+        return <div><BasketballMatches/></div>;
       default:
         return null;
     }
@@ -43,12 +64,13 @@ export default function BetPage() {
   const handleSeeAll = () => {
     router.push('/all-contests')
   }
+  const selectedSportInfo = sports.find(sport => sport.name === selectedSport);
 
   return (
-    <div className="bg-black min-h-screen text-white">
+    <div className="bg-black min-h-screen text-white ">
       <main className="px-2">
-        <section className="mb-1">
-          <div className="flex  items-center justify-between">
+        <section className="mb-1 sticky top-[59px] bg-black z-10">
+          <div className="flex items-center justify-between ">
             {sports.map((sport, index) => (
               <div
                 key={index}
@@ -72,11 +94,17 @@ export default function BetPage() {
               </div>
             ))}
           </div>
+          <hr className="text-gray-800 m-4"/>
         </section>
 
         <section className="rounded-lg relative space-y-2 ">
           <div className='flex items-center justify-between px-4'>
-            <h2 className="text-[12px] font-bold">{selectedSport} Matches</h2>
+            {/* <h2 className="text-[12px] font-bold">{selectedSport} Matches</h2> */}
+           <div className="flex gap-2 items-center">
+              <img src={selectedSportInfo.logo} alt={`${selectedSportInfo.league} logo`} className="text-white h-10 w-8" />
+              <h2 className="font-bold">{selectedSportInfo.league}</h2>
+            </div>
+          
             <button className='bg-slate-800 p-2 px-4 rounded-full text-[10px]' onClick={handleSeeAll}>See All</button>
           </div>
           {renderMatches()}
