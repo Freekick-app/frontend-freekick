@@ -23,15 +23,15 @@ const PlaceBet = () => {
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const username = localStorage.getItem("username");
-    const password = localStorage.getItem("password");
-    if (username && password) {
-      setAuthCredentials({ username, password });
-    } else {
-      setError("Missing authentication credentials");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const username = localStorage.getItem("username");
+  //   const password = localStorage.getItem("password");
+  //   if (username && password) {
+  //     setAuthCredentials({ username, password });
+  //   } else {
+  //     setError("Missing authentication credentials");
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (poolId) {

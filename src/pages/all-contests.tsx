@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import axiosInstance from "@/utils/axios";
+import { AuthService } from "@/services/auth";
 
 
 interface Team {
@@ -28,13 +29,14 @@ const AllContests = () => {
 
 
   useEffect(() => {
-    const storedName = localStorage.getItem("username");
-    const storedPassword = localStorage.getItem("password");
+    // const storedName = localStorage.getItem("username");
+    // const storedPassword = localStorage.getItem("password");
 
-    if (storedName) setName(storedName);
-    if (storedPassword) setPassword(storedPassword);
+    // if (storedName) setName(storedName);
+    // if (storedPassword) setPassword(storedPassword);
+    const token = AuthService.getAccessToken();
 
-    if (storedName && storedPassword) {
+    if (token) {
       axiosInstance
         .get(`/sports/games`, {
           headers: {
