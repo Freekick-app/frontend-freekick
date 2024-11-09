@@ -13,10 +13,10 @@ export default function Header() {
           <div className="rounded-full w-14 h-14 bg-gray-500"></div>
           <span className="text-lg">Hello, Username</span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex ">
           <LoginButton/>
-        <button className="text-3xl"><IoMdNotificationsOutline/></button>
-        <button className="text-white text-2xl px-3 py-2 bg-slate-800 rounded-full"><BiWalletAlt /></button>
+        {/* <button className="text-3xl"><IoMdNotificationsOutline/></button>
+        <button className="text-white text-2xl px-3 py-2 bg-slate-800 rounded-full"><BiWalletAlt /></button> */}
         </div>
       </header>
     );

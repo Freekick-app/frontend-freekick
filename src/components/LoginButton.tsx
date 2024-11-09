@@ -1,49 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Web3AuthService } from '../services/web3Auth';
 import { AuthService } from '../services/auth';
-import { useEffect } from 'react';
+import { IoMdNotificationsOutline } from 'react-icons/io';
+import { BiWalletAlt } from 'react-icons/bi';
 
 export default function LoginButton() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null)
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
-  useEffect(()=> {
-    if(Web3AuthService){
-      setTimeout(async ()=>{
+  useEffect(() => {
+    // Fetch the current wallet address if already logged in
+    const fetchWalletAddress = async () => {
       const web3Auth = Web3AuthService.getInstance();
-    const address = await web3Auth.getCurrentWalletAddress();
-    if (address) setWalletAddress(address)
-    },10)
-    }
+      const address = await web3Auth.getCurrentWalletAddress();
+      if (address) setWalletAddress(address);
+    };
 
-  }, [])
+    if (Web3AuthService) {
+      setTimeout(fetchWalletAddress, 10);
+    }
+  }, []);
 
   const handleLogin = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Get Web3 service instance
       const web3Auth = Web3AuthService.getInstance();
-
-      // Connect wallet and get address
       const walletAddress = await web3Auth.connectWallet();
-
-      // Request message to sign
       const message = await AuthService.requestMessage(walletAddress);
-
-      // Sign message
       const signature = await web3Auth.signMessage(message);
-
-      // Verify signature and get tokens
       const tokens = await AuthService.verifySignature(walletAddress, signature);
 
-      // Save tokens
       AuthService.saveTokens(tokens);
-
-      // Redirect or update UI
-      window.location.href = '/';
+      setWalletAddress(walletAddress);
     } catch (error) {
       console.error('Login failed:', error);
       setError('Login failed. Please try again.');
@@ -52,20 +43,31 @@ export default function LoginButton() {
     }
   };
 
-  function shortAddress(address:string) {
-    const short = ` 0x${address.slice(2, 6)}...${address.slice(-4)}`
-    return short
+  function shortAddress(address: string) {
+    return `${address.slice(-4)}`;
   }
 
   return (
-    <div>
-      <button
-        onClick={handleLogin}
-        disabled={isLoading}
-        className="p-1 text-xs bg-blue-500 text-white rounded disabled:opacity-50"
-      >
-        {isLoading ? 'Connecting...' : walletAddress? shortAddress(walletAddress): 'Connect Wallet'}
-      </button>
+    <div className="flex items-center space-x-3">
+      {walletAddress ? (
+        <>
+          <button className="text-3xl">
+            <IoMdNotificationsOutline />
+          </button>
+          <button className="text-white text-sm px-3 py-2 bg-slate-800 rounded-full flex items-center">
+            <BiWalletAlt className='text-lg' />
+            <span className="ml-1">{shortAddress(walletAddress)}</span>
+          </button>
+        </>
+      ) : (
+        <button
+          onClick={handleLogin}
+          disabled={isLoading}
+          className="p-1 text-xs bg-blue-500 text-white rounded disabled:opacity-50"
+        >
+          {isLoading ? 'Connecting...' : 'Connect Wallet'}
+        </button>
+      )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
     </div>
   );
