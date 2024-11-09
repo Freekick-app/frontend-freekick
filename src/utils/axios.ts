@@ -46,7 +46,7 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         // If refresh fails, clear tokens and redirect to login
         AuthService.clearTokens();
-        window.location.href = '/login';
+        window.location.href = '/';
         return Promise.reject(refreshError);
       }
     }

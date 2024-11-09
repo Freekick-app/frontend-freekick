@@ -30,7 +30,10 @@ export class AuthService {
       if (response.status !== 200){
         throw response?.data?.error
       }
+      console.log(response.data);
+
       return response?.data?.tokens;
+
     } catch (error) {
       console.error('Error verifying signature:', error);
       throw error;

@@ -19,7 +19,7 @@ interface Option {
 }
 
 interface UserAnswer {
-  selected_option_id: string[]; 
+  selected_option_id: string;
   answered_at: string;
 }
 
@@ -29,8 +29,8 @@ interface Question {
   points: number;
   difficulty: string;
   question_type: string;
-  options: Option[];
-  user_answer?: UserAnswer | null;
+  options: Option[]; // Updated to match the required format
+  user_answer?: UserAnswer; // Updated to handle selected options and timestamp
 }
 
 interface PoolData {
@@ -43,7 +43,7 @@ export default function DisplayQuestions() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const poolId = 23;
+  const poolId = 20;
 
   useEffect(() => {
     const token = AuthService.getAccessToken();
@@ -52,12 +52,13 @@ export default function DisplayQuestions() {
       axiosInstance
         .get(`/pools/${poolId}/questions/`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            
           },
         })
         .then((response) => {
           setData(response.data);
           console.log(response.data);
+
         })
         .catch((error) => {
           setError(error.message);
@@ -74,7 +75,7 @@ export default function DisplayQuestions() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div>
+    <div className="p-4">
       <h1>Pool Info</h1>
       {data && (
         <div>
@@ -99,26 +100,30 @@ export default function DisplayQuestions() {
             <ul>
               {question.options.map((option) => (
                 <li key={option.id}>
-                  <span>Text: {option.text}</span>
+                  <span> - {option.text}</span>
                 </li>
               ))}
             </ul>
 
             <p><strong>Your Answer:</strong></p>
             {question.user_answer ? (
-              <div>
-                <p>Answered At: {question.user_answer.answered_at}</p>
-                <ul>
-                  {question.user_answer.selected_option_id.map((selectedId) => {
-                    const selectedOption = question.options.find(option => option.id === selectedId);
-                    return (
-                      <li key={selectedId}>
-                        {selectedOption ? <span>Text: {selectedOption.text}</span> : <span>Option ID: {selectedId} (Text not found)</span>}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
+               <div>
+               <p>Answered At: {question.user_answer.answered_at}</p>
+               <ul>
+                 {/* Clean up each selected ID and find the matching option */}
+                 {(question.user_answer.selected_option_id.replace(/'/g, '"').slice(1, -1).split(',')).map((selectedId: string) => {
+                   const idTrimmed = selectedId.trim().replace(/['"]/g, ""); // Trim and remove any surrounding quotes
+                   const selectedOption = question.options.find(
+                     (option) => option.id === idTrimmed
+                   );
+                   return (
+                     <li key={idTrimmed}>
+                       <span className="font-bold">Ans: {selectedOption ? selectedOption.text : "Unknown option"}</span>
+                     </li>
+                   );
+                 })}
+               </ul>
+             </div>
             ) : (
               <p>Not answered</p>
             )}

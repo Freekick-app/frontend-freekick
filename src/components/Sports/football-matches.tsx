@@ -44,6 +44,7 @@ const FootballMatches = () => {
           },
         })
         .then((response) => {
+          console.log(response.data);
           const today = new Date();
           const oneWeekFromToday = new Date();
           oneWeekFromToday.setDate(today.getDate() + 7);
