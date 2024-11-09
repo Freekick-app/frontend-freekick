@@ -84,7 +84,7 @@ const FootballMatches = () => {
     <div>
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1">
       {data.map((match) => (
         <div key={match.id} className="bg-gray-700 w-full rounded-2xl h-[70px] p-1 my-4 relative z-0">
           <div className="flex justify-between items-center">
