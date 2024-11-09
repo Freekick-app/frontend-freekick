@@ -40,7 +40,7 @@ export default function BetPage() {
     }
   };
 
-  const handleSeeAll = () =>{
+  const handleSeeAll = () => {
     router.push('/all-contests')
   }
 
@@ -81,8 +81,10 @@ export default function BetPage() {
           </div>
           {renderMatches()}
         </section>
-     
+
       </main>
     </div>
+
+   
   );
 }

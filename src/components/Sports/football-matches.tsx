@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "@/utils/axios";
 import { useRouter } from "next/router";
 import { AuthService } from "@/services/auth";
-import axiosInstance from "@/utils/axios";
 
 interface Team {
   id: number;
@@ -21,30 +19,22 @@ interface Match {
 }
 
 const FootballMatches = () => {
-  const [name, setName] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
   const [data, setData] = useState<Match[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
   const router = useRouter();
 
   useEffect(() => {
-    // const storedName = localStorage.getItem("username");
-    // const storedPassword = localStorage.getItem("password");
     const token = AuthService.getAccessToken();
 
-    // if (storedName) setName(storedName);
-    // if (storedPassword) setPassword(storedPassword);
-    
     if (token) {
-      axiosInstance.get(`/sports/games`, {
+      axiosInstance
+        .get(`/sports/games`, {
           headers: {
-            // Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         })
         .then((response) => {
-          console.log(response.data);
           const today = new Date();
           const oneWeekFromToday = new Date();
           oneWeekFromToday.setDate(today.getDate() + 7);
@@ -72,49 +62,74 @@ const FootballMatches = () => {
     router.push(`/place-bet?matchId=${matchId}`);
   };
 
+  const getLastWord = (str: string) => {
+    const words = str.split(" ");
+    return words[words.length - 1];
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+    };
+    return date.toLocaleDateString('en-GB', options); // Formats date as DD/MM
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // Use 12-hour format
+    };
+    return date.toLocaleTimeString('en-GB', options); // Formats time as hh:mm AM/PM
+  };
+
   return (
     <div>
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
       {data.map((match) => (
-        <div key={match.id} className="my-4">
-          <div className="flex justify-between gap-4 relative z-0">
-            <div className="bg-[#333333] p-4 rounded-3xl flex flex-col items-center text-center w-1/2">
+        <div key={match.id} className="bg-gray-800 w-full rounded-2xl h-[100px]  p-1 my-4 relative z-0">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
               <img
                 src={match.home_team.logo_url}
                 alt={match.home_team.name}
-                className="rounded-full w-[130px] h-[130px]"
+                className="rounded-full max-w-[50px] h-[50px]"
               />
-              <h3 className="mt-2 font-semibold text-white">
-                {match.home_team.display_name}
-              </h3>
-              <span className="text-[#CEFF00] mt-1">⭐ Score</span>
+              <div className="text-white font-semibold text-sm ">
+                {getLastWord(match.home_team.display_name)}
+              </div>
             </div>
 
-            <div className="bg-[#333333] p-4 rounded-3xl flex flex-col items-center text-center w-1/2">
+            <div className="text-center text-gray-400 text-[10px] flex flex-col justify-center items-center">
+              <div>{formatDate(match.date)}</div> 
+              <div>{formatTime(match.date)}</div> 
+            </div>
+
+            <div className="flex items-center">
+              <div className="text-white font-semibold text-sm ">
+                {getLastWord(match.away_team.display_name)}
+              </div>
               <img
                 src={match.away_team.logo_url}
                 alt={match.away_team.name}
-                className="rounded-full w-[130px] h-[130px]"
+                className="rounded-full max-w-[50px] h-[50px]"
               />
-              <h3 className="mt-2 font-semibold text-white">
-                {match.away_team.display_name}
-              </h3>
-              <span className="text-[#CEFF00] mt-1">⭐ Score</span>
-            </div>
-
-            <div className="absolute inset-x-0 top-0 flex justify-center mt-[180px] z-10">
-              <div className="bg-[#CEFF00] text-black rounded-full border-black border-[10px] py-2 px-4 text-xl font-bold">
-                2:5
-              </div>
             </div>
           </div>
-
-          <div className="mt-4">
-            <button className="w-full bg-[#1F1DFF] py-6 rounded-full text-white text-lg font-semibold"
-             onClick={() => handlePlaceBet(match.id)}>Place a Bet</button>
+          <div className="flex items-center justify-center z-10 absolute inset-x-0 top-[70px]">
+          <button
+            className="  bg-blue-600 py-2 rounded-full px-8  text-white text-sm font-semibold"
+            onClick={() => handlePlaceBet(match.id)}
+          >
+            Play Now
+          </button>
           </div>
+         
         </div>
       ))}
     </div>
