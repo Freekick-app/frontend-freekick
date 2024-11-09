@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { Web3AuthService } from '../services/web3Auth';
 import { AuthService } from '../services/auth';
 import { IoMdNotificationsOutline } from 'react-icons/io';

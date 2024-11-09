@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {axiosInstanceWithoutAuth} from "@/utils/axios";
 import { useRouter } from "next/router";
-import { AuthService } from "@/services/auth";
+// import { AuthService } from "@/services/auth";
 
 interface Team {
   id: number;
