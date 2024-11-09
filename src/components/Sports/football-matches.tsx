@@ -92,32 +92,32 @@ const FootballMatches = () => {
       {error && <p className="text-red-500">{error}</p>}
 
       {data.map((match) => (
-        <div key={match.id} className="bg-gray-800 w-full rounded-2xl h-[100px]  p-1 my-4 relative z-0">
+        <div key={match.id} className="bg-gray-800 w-full rounded-2xl h-[100px]   p-1 my-4 relative z-0">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <img
                 src={match.home_team.logo_url}
                 alt={match.home_team.name}
-                className="rounded-full max-w-[50px] h-[50px]"
+                className="rounded-full max-w-[60px] h-[60px]"
               />
-              <div className="text-white font-semibold text-sm ">
+              <div className="text-white font-semibold text-sm ml-1 ">
                 {getLastWord(match.home_team.display_name)}
               </div>
             </div>
 
-            <div className="text-center text-gray-400 text-[10px] flex flex-col justify-center items-center">
+            <div className="text-center absolute inset-x-0 text-gray-400 text-[10px] flex flex-col justify-center items-center">
               <div>{formatDate(match.date)}</div> 
               <div>{formatTime(match.date)}</div> 
             </div>
 
             <div className="flex items-center">
-              <div className="text-white font-semibold text-sm ">
+              <div className="text-white font-semibold text-sm mr-1 ">
                 {getLastWord(match.away_team.display_name)}
               </div>
               <img
                 src={match.away_team.logo_url}
                 alt={match.away_team.name}
-                className="rounded-full max-w-[50px] h-[50px]"
+                className="rounded-full max-w-[60px] h-[60px]"
               />
             </div>
           </div>

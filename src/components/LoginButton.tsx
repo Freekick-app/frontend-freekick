@@ -51,11 +51,11 @@ export default function LoginButton() {
     <div className="flex items-center space-x-3">
       {walletAddress ? (
         <>
-          <button className="text-3xl">
+          <button className="text-[20px]">
             <IoMdNotificationsOutline />
           </button>
-          <button className="text-white text-sm px-3 py-2 bg-slate-800 rounded-full flex items-center">
-            <BiWalletAlt className='text-lg' />
+          <button className="text-white text-[10px] px-3 py-2 bg-slate-800 rounded-full flex items-center">
+            <BiWalletAlt className='text-base' />
             <span className="ml-1">{shortAddress(walletAddress)}</span>
           </button>
         </>
