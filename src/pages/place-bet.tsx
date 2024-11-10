@@ -9,6 +9,7 @@ import { AuthService } from "@/services/auth";
 import { TbCircleNumber1Filled } from "react-icons/tb";
 import ContestOptions from "@/components/SingleGame/contest-options";
 import UserContests from "@/components/SingleGame/user-contests";
+import TeamStats from "@/components/SingleGame/team-stats";
 
 
 
@@ -29,6 +30,8 @@ const PlaceBet = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("contests");
 
+  const betSizes = [100, 50, 20, 10, 5, 1];
+
 
   useEffect(() => {
     const token = AuthService.getAccessToken();
@@ -47,12 +50,11 @@ const PlaceBet = () => {
     }
   }, [poolId]);
 
-  const handlePlaceBet = async () => {
+  const handlePlaceBet = async (betSize: number) => {
     if (!authCredentials) {
       setError("Please login to place a bet.");
       return;
     }
-
     try {
       const response = await axiosInstance.post(
         `/pools/place_bet/`,
@@ -276,20 +278,21 @@ const PlaceBet = () => {
   const renderOptions = () => {
     switch (activeTab) {
       case "contests":
-        return <div>
-        <ContestOptions handlePlaceBet={handlePlaceBet} betSize={betSize}/>
-        <ContestOptions handlePlaceBet={handlePlaceBet} betSize={betSize}/>
-        <ContestOptions handlePlaceBet={handlePlaceBet} betSize={betSize}/>
-        <ContestOptions handlePlaceBet={handlePlaceBet} betSize={betSize}/>
-        <ContestOptions handlePlaceBet={handlePlaceBet} betSize={betSize}/>
-        <ContestOptions handlePlaceBet={handlePlaceBet} betSize={betSize}/>      
+        return <div className="flex flex-col">
+        {betSizes.map((size, index) => (
+            <ContestOptions 
+              key={index} 
+              handlePlaceBet={handlePlaceBet} 
+              betSize={size} // Pass each bet size to ContestOptions
+            />
+          ))}    
         </div> 
       case "myContests":
         return <UserContests/>
       case "teams":
         return <div>Teams</div>;
       case "statistics":
-        return <div>Statistics</div>;
+        return <div><TeamStats/></div>;
       default:
         return null;
     }
@@ -358,7 +361,7 @@ const PlaceBet = () => {
                     />
                   </div></div>
               </div>
-              <div className="flex justify-center bg-gray-900 text-white space-x-10 py-2 text-sm rounded-sm">
+              <div className="flex items-center px-1 bg-gray-900 text-white justify-between py-2 text-xs rounded-sm">
                 <div
                   className={`text-gray-300 hover:text-white cursor-pointer ${activeTab === "contests" ? "text-white font-bold border-b-2 border-white" : ""
                     }`}

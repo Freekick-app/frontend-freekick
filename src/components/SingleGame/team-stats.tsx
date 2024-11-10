@@ -3,7 +3,7 @@ import { SiPremierleague } from "react-icons/si";
 import { BsStarFill } from "react-icons/bs";
 
 
-export default function TeamStat() {
+export default function TeamStats() {
     return (
         <div className=" items-center text-center px-4">
             <div className="flex py-2 gap-1 ">
