@@ -1,26 +1,110 @@
-export default function UserContests(){
-    return(
-        <div className="bg-[#2365EA] rounded-lg m-2">
-          <div className="flex text-center p-4 text-sm justify-between">
-            <div className="flex flex-col">
-              <h1>Prize Pool</h1>
-              <h1>3X | $ 1000</h1>
-            </div>
-            <div className="flex flex-col">
-                <h1>Sports</h1>
-                <h1>10 Pools | 100 Players</h1>
-            </div>
-            <div className="flex flex-col">
-              <h1>Entry</h1>
-              <h1>$100</h1>
-            </div>
-          </div>
-          <div className="flex justify-between text-[12px] p-2 bg-slate-900 rounded-b-lg border-b-[1px]">
-              <h1>Pool 1</h1>
-              <h1>18/25</h1>
-              <h1>Won $11</h1>
-              <h1>Rank 1</h1>
-          </div>
+import axiosInstance from "@/utils/axios";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+
+type Participant = {
+    id: number;
+    bet_amount: string;
+    joined_at: string;
+    rank: number | null;
+    score: number;
+    user: number;
+    winning_amount: string;
+};
+
+type Pool = {
+    id: number;
+    name: string;
+    bet_size: number;
+    current_participants: number;
+    max_participants: number;
+    total_prize_pool: string;
+    status: string;
+    participants: Participant[];
+    game: {
+        description: string;
+        start_time: string;
+        end_time: string;
+    };
+};
+
+export default function UserContests() {
+    const router = useRouter();
+    const { matchId } = router.query;
+    const [myPools, setMyPools] = useState<Pool[]>([]);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (matchId) {
+            fetchMyPools();
+        }
+    }, [matchId]);
+
+    const fetchMyPools = async () => {
+        try {
+            const response = await axiosInstance.get('/pools/my_pools/', {
+                params: { matchId },
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+            });
+            if (response.status !== 200) {
+                setError('Error: Failed to fetch pools');
+                return;
+            }
+            const data: Pool[] = await response.data;
+            setMyPools(data);
+            setError(null);
+        } catch (error) {
+            setError('An error occurred while fetching pools');
+            console.error(error);
+        }
+    };
+
+
+    const groupedPools = myPools.reduce((acc, pool) => {
+        if (!acc[pool.bet_size]) {
+            acc[pool.bet_size] = [];
+        }
+        acc[pool.bet_size].push(pool);
+        return acc;
+    }, {} as Record<number, Pool[]>);
+
+    return (
+        <div className=" rounded-lg m-2">
+            {Object.keys(groupedPools).length > 0 ? (
+                Object.entries(groupedPools).map(([betSize, pools]) => (
+                    <div key={betSize} className="mb-4 bg-[#2365EA] rounded-lg">
+                        <div className="flex text-center p-4 text-sm justify-between">
+                            <div className="flex flex-col">
+                                <h1>Prize Pool</h1>
+                                <h1>3X | ${betSize}</h1>
+                            </div>
+                            <div className="flex flex-col">
+                                <h1>Spots</h1>
+                                <h1>{pools[0].max_participants} Pools | {pools.reduce((acc, pool) => acc + pool.current_participants, 0)} Players</h1>
+                            </div>
+                            <div className="flex flex-col">
+                                <h1>Entry</h1>
+                                <h1>${betSize}</h1>
+                            </div>
+                        </div>
+                        {pools.map((pool) => (
+                            <div key={pool.id} className="flex justify-between text-[12px] p-2 bg-slate-900 rounded-b-lg border-b-[1px]">
+                                {/* <h1>{pool.name}</h1> */}
+                                <h1>Pool {pool.id}</h1>
+                                <h1>{pool.current_participants}/{pool.max_participants}</h1>
+                                <h1>Won ${pool.participants[0]?.winning_amount ?? '0.00'}</h1>
+                                <h1>Rank {pool.participants[0]?.rank ?? 'N/A'}</h1>
+                            </div>
+                        ))}
+                    </div>
+                ))
+            ) : (
+                <div className="text-center text-white p-4">No pools available.</div>
+            )}
+            {error && <div className="text-red-500 text-center">{error}</div>}
         </div>
-    )
+    );
 }

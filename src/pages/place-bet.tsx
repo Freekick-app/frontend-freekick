@@ -9,7 +9,7 @@ import { AuthService } from "@/services/auth";
 import { TbCircleNumber1Filled } from "react-icons/tb";
 import ContestOptions from "@/components/SingleGame/contest-options";
 import UserContests from "@/components/SingleGame/user-contests";
-import TeamStats from "@/components/SingleGame/team-stats";
+import Statistics from "@/components/SingleGame/statistics";
 
 
 
@@ -29,6 +29,7 @@ const PlaceBet = () => {
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("contests");
+  const [myPools, setMyPools] = useState<any>();
 
   const betSizes = [100, 50, 20, 10, 5, 1];
 
@@ -213,6 +214,7 @@ const PlaceBet = () => {
   useEffect(() => {
     if (matchId) {
       showGameDetails();
+      // MyPools();
       console.log(gameDetails)
     }
   }, [matchId]);
@@ -271,10 +273,6 @@ const PlaceBet = () => {
   };
 
 
-
-
-
-
   const renderOptions = () => {
     switch (activeTab) {
       case "contests":
@@ -292,7 +290,7 @@ const PlaceBet = () => {
       case "teams":
         return <div>Teams</div>;
       case "statistics":
-        return <div><TeamStats/></div>;
+        return <div><Statistics/></div>;
       default:
         return null;
     }
