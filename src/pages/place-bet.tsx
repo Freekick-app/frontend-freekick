@@ -4,8 +4,13 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import Questions from "@/components/Questions/questions";
-import axiosInstance from "@/utils/axios";
+import axiosInstance, { axiosInstanceWithoutAuth } from "@/utils/axios";
 import { AuthService } from "@/services/auth";
+import { TbCircleNumber1Filled } from "react-icons/tb";
+import ContestOptions from "@/components/SingleGame/contest-options";
+import UserContests from "@/components/SingleGame/user-contests";
+
+
 
 const PlaceBet = () => {
   const router = useRouter();
@@ -13,7 +18,7 @@ const PlaceBet = () => {
   const [poolId, setPoolId] = useState<string | undefined>();
   const [betSize] = useState<number>(10);
   const [error, setError] = useState<string | null>(null);
-  const [authCredentials, setAuthCredentials] = useState<{ token:string} | null>(null);
+  const [authCredentials, setAuthCredentials] = useState<{ token: string } | null>(null);
   const [questions, setQuestions] = useState<any[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<{ [key: number]: { id: string; text: string } }>({});
@@ -21,16 +26,18 @@ const PlaceBet = () => {
   const [betState, setBetState] = useState("initial");
   const [gameDetails, setGameDetails] = useState<any>();
   const [timeLeft, setTimeLeft] = useState<string>('');
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("contests");
+
 
   useEffect(() => {
-    const token  = AuthService.getAccessToken();
+    const token = AuthService.getAccessToken();
     // const username = localStorage.getItem("username");
     // const password = localStorage.getItem("password");
     if (token) {
-      setAuthCredentials({token});
+      setAuthCredentials({ token });
     } else {
-      setError("Missing authentication credentials");
+      setError("Please login to place a bet.");
     }
   }, []);
 
@@ -42,7 +49,7 @@ const PlaceBet = () => {
 
   const handlePlaceBet = async () => {
     if (!authCredentials) {
-      setError("Missing authentication credentials");
+      setError("Please login to place a bet.");
       return;
     }
 
@@ -111,6 +118,7 @@ const PlaceBet = () => {
 
   const handleBackToHome = async () => {
     console.log("Returing to quiz pages")
+   
     router.push("/")
   };
 
@@ -152,7 +160,7 @@ const PlaceBet = () => {
           // body: JSON.stringify(payload),
         }
       );
-     
+
       const data = await response.data
 
       if (data.status === "success") {
@@ -172,11 +180,11 @@ const PlaceBet = () => {
 
   const showGameDetails = async () => {
     try {
-      if (!authCredentials) {
-        setError("Missing authentication credentials");
-        return;
-      }
-      const response = await axiosInstance.get(
+      // if (!authCredentials) {
+      //   setError("Missing authentication credentials");
+      //   return;
+      // }
+      const response = await axiosInstanceWithoutAuth.get(
         `/sports/games/${matchId}/`,
         {
           headers: {
@@ -186,7 +194,7 @@ const PlaceBet = () => {
           },
         }
       );
-      if (response.status !==200) {
+      if (response.status !== 200) {
         const errorData = response.data
         setError(`Error: ${errorData.message || "Failed to fetch game details"}`);
         return;
@@ -201,39 +209,91 @@ const PlaceBet = () => {
     }
   };
   useEffect(() => {
-    if (matchId && authCredentials) {
+    if (matchId) {
       showGameDetails();
       console.log(gameDetails)
     }
-  }, [matchId, authCredentials]);
+  }, [matchId]);
 
 
 
-  useEffect(() => {
-    if (gameDetails?.date) {
-      const matchDate = new Date(gameDetails.date);
+  // useEffect(() => {
+  //   if (gameDetails?.date) {
+  //     const matchDate = new Date(gameDetails.date);
 
-      const updateTimer = () => {
-        const now = new Date();
-        const diff = matchDate.getTime() - now.getTime();
+  //     const updateTimer = () => {
+  //       const now = new Date();
+  //       const diff = matchDate.getTime() - now.getTime();
 
-        if (diff <= 0) {
-          setTimeLeft("Match has started");
-        } else {
-          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-          const minutes = Math.floor((diff / (1000 * 60)) % 60);
-          const seconds = Math.floor((diff / 1000) % 60);
-          setTimeLeft(`${hours}h ${minutes}m ${seconds}s left`);
-        }
-      };
+  //       if (diff <= 0) {
+  //         setTimeLeft("Match has started");
+  //       } else {
+  //         const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  //         const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  //         const seconds = Math.floor((diff / 1000) % 60);
+  //         setTimeLeft(`${hours}h ${minutes}m ${seconds}s left`);
+  //       }
+  //     };
 
-      updateTimer();
-      const timer = setInterval(updateTimer, 1000);
+  //     updateTimer();
+  //     const timer = setInterval(updateTimer, 1000);
 
-      return () => clearInterval(timer);
+  //     return () => clearInterval(timer);
+  //   }
+  // }, [gameDetails?.date]);
+
+
+
+  const getLastWord = (str: string) => {
+    const words = str.split(" ");
+    return words[words.length - 1];
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+    };
+    return date.toLocaleDateString('en-GB', options); // Formats date as DD/MM
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // Use 12-hour format
+    };
+    return date.toLocaleTimeString('en-GB', options); // Formats time as hh:mm AM/PM
+  };
+
+
+
+
+
+
+  const renderOptions = () => {
+    switch (activeTab) {
+      case "contests":
+        return <div>
+        <ContestOptions handlePlaceBet={handlePlaceBet} betSize={betSize}/>
+        <ContestOptions handlePlaceBet={handlePlaceBet} betSize={betSize}/>
+        <ContestOptions handlePlaceBet={handlePlaceBet} betSize={betSize}/>
+        <ContestOptions handlePlaceBet={handlePlaceBet} betSize={betSize}/>
+        <ContestOptions handlePlaceBet={handlePlaceBet} betSize={betSize}/>
+        <ContestOptions handlePlaceBet={handlePlaceBet} betSize={betSize}/>      
+        </div> 
+      case "myContests":
+        return <UserContests/>
+      case "teams":
+        return <div>Teams</div>;
+      case "statistics":
+        return <div>Statistics</div>;
+      default:
+        return null;
     }
-  }, [gameDetails?.date]);
-
+  }
 
 
   return (
@@ -260,59 +320,83 @@ const PlaceBet = () => {
           </button>
         </div>
       ) : (
-        <div className="px-4  max-w-xl mx-auto text-center">
+        <div className="px-1 w-full mx-auto text-center">
           {gameDetails ? (
-            <div className="bg-gray-800 py-4 px-4 space-y-2 items-center text-center rounded-[40px]">
-              <div className="flex justify-center items-center gap-1">
-                <img
-                  src={gameDetails.home_team.logo_url}
-                  alt="Home Team logo"
-                  className="w-8 h-8"
-                />
-                <p className="text-white font-bold text-sm">
-                  {gameDetails.home_team.display_name}
-                </p>
-                <div className="bg-[#CEFF00] text-black font-bold px-2 py-1 rounded-full text-center">
-                  vs
-                </div>
-                <p className="text-white font-bold text-sm">
-                  {gameDetails.away_team.display_name}
-                </p>
-                <img
-                  src={gameDetails.away_team.logo_url}
-                  alt="Away Team logo"
-                  className="w-8 h-8"
-                />
+            <div className=" sticky top-[60px] bg-black">
+              <div className="bg-gray-700 p-2 space-y-2 items-center text-center rounded-xl relative">
+                <div className="flex justify-between">
+                  <div className="flex items-center gap-1">
+                    <img
+                      src={gameDetails.home_team.logo_url}
+                      alt="Home Team logo"
+                      className="h-12"
+                    />
+                    <div className="text-start">
+                      <p className="text-white font-semibold text-sm ">
+                        {getLastWord(gameDetails.home_team.display_name)}
+                      </p>
+                      <h1 className="text-[8px]">4-5, 2nd AFC South</h1>
+                    </div>
+                  </div>
+
+                  <div className="absolute inset-0 flex justify-center items-center">
+                    <div className="text-center text-gray-400 text-[10px] flex flex-col">
+                      <div>{formatDate(gameDetails.date)}</div>
+                      <div>{formatTime(gameDetails.date)}</div>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 items-center"><div className="text-end">
+                    <p className="text-white font-semibold text-sm ">
+                      {getLastWord(gameDetails.away_team.display_name)}
+                    </p>
+                    <h1 className="text-[8px]">4-5, 2nd AFC South</h1>
+                  </div>
+                    <img
+                      src={gameDetails.away_team.logo_url}
+                      alt="Away Team logo"
+                      className=" h-12"
+                    />
+                  </div></div>
               </div>
-              <div className="flex justify-center">
-                <div className="bg-blue-600 text-white text-xs w-[150px] py-2 rounded-xl text-center">
-                  {timeLeft}
+              <div className="flex justify-center bg-gray-900 text-white space-x-10 py-2 text-sm rounded-sm">
+                <div
+                  className={`text-gray-300 hover:text-white cursor-pointer ${activeTab === "contests" ? "text-white font-bold border-b-2 border-white" : ""
+                    }`}
+                  onClick={() => setActiveTab("contests")}
+                >
+                  Contests
+                </div>
+                <div
+                  className={`text-gray-300 hover:text-white cursor-pointer ${activeTab === "myContests" ? "text-white font-bold border-b-2 border-white" : ""
+                    }`}
+                  onClick={() => setActiveTab("myContests")}
+                >
+                  My Contests
+                </div>
+                <div
+                  className={`text-gray-300 hover:text-white cursor-pointer ${activeTab === "teams" ? "text-white font-bold border-b-2 border-white" : ""
+                    }`}
+                  onClick={() => setActiveTab("teams")}
+                >
+                  Teams
+                </div>
+                <div
+                  className={`text-gray-300 hover:text-white cursor-pointer ${activeTab === "statistics" ? "text-white font-bold border-b-2 border-white" : ""
+                    }`}
+                  onClick={() => setActiveTab("statistics")}
+                >
+                  Statistics
                 </div>
               </div>
             </div>
+
+
           ) : (
             <p>Loading game details...</p>
           )}
-          <hr className="m-2" />
-          <div className="bg-gray-800 p-4 rounded-3xl">
-            {/* <h1 className="text-2xl font-bold">Place Your Bet for Match {matchId}</h1> */}
-            <div className="flex justify-between font-bold  text-center ">
-              <div className="flex flex-col items-start">
-              <h1>Prize Pool</h1>
-              <h1 className="text-xl">$100</h1>
-              </div>
-              
-              <button className="bg-blue-500 rounded-xl px-2 text-center text-base items-center ">Bet Size: ${betSize}</button>
-            </div>
-            
-            <button
-              onClick={handlePlaceBet}
-              className="mt-4 bg-[#CEFF00] py-2 px-4 rounded-full text-black text-lg font-semibold"
-            >
-              Place Bet
-            </button>
-            {error && <p className="text-red-500 mt-4">{error}</p>}
-          </div>
+
+
+          {renderOptions()}
         </div>
       )}
     </div>

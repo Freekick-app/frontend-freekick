@@ -23,7 +23,16 @@ const FootballMatches = () => {
   const [data, setData] = useState<Match[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [selectedButton, setSelectedButton] = useState("contests");
+
   const router = useRouter();
+
+
+
+  
+
+
+
 
   useEffect(() => {
     axiosInstanceWithoutAuth

@@ -64,7 +64,7 @@ export default function BetPage() {
   const handleSeeAll = () => {
     router.push('/all-contests')
   }
-  const selectedSportInfo = sports.find(sport => sport.name === selectedSport);
+  const selectedSportInfo = sports.find(sport => sport.name === selectedSport) ;
 
   return (
     <div className="bg-black min-h-screen text-white ">
@@ -101,8 +101,8 @@ export default function BetPage() {
           <div className='flex items-center justify-between px-4'>
             {/* <h2 className="text-[12px] font-bold">{selectedSport} Matches</h2> */}
            <div className="flex gap-2 items-center">
-              <img src={selectedSportInfo.logo} alt={`${selectedSportInfo.league} logo`} className="text-white h-10 w-8" />
-              <h2 className="font-bold">{selectedSportInfo.league}</h2>
+              <img src={selectedSportInfo?.logo } alt={`${selectedSportInfo?.league} logo`} className="text-white h-10 w-8" />
+              <h2 className="font-bold">{selectedSportInfo?.league}</h2>
             </div>
           
             <button className='bg-slate-800 p-2 px-4 rounded-full text-[10px]' onClick={handleSeeAll}>See All</button>
