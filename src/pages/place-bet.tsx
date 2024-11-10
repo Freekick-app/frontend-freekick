@@ -9,7 +9,8 @@ import { AuthService } from "@/services/auth";
 import { TbCircleNumber1Filled } from "react-icons/tb";
 import ContestOptions from "@/components/SingleGame/contest-options";
 import UserContests from "@/components/SingleGame/user-contests";
-import Statistics from "@/components/SingleGame/statistics";
+import Statistics from "@/components/SingleGame/Stats/statistics";
+import Teams from "@/components/SingleGame/Teams/teams";
 
 
 
@@ -202,15 +203,23 @@ const PlaceBet = () => {
         setError(`Error: ${errorData.message || "Failed to fetch game details"}`);
         return;
       }
-      const data = await response.data
+      const data = await response.data;
       setGameDetails(data);
       console.log(data);
       setError(null);
+      const homeTeamId = data.home_team.id;
+      const awayTeamId = data.away_team.id;
+
+
+
     } catch (error) {
       setError("An error occurred while fetching game details");
       console.error(error);
     }
   };
+
+
+
   useEffect(() => {
     if (matchId) {
       showGameDetails();
@@ -288,7 +297,7 @@ const PlaceBet = () => {
       case "myContests":
         return <UserContests/>
       case "teams":
-        return <div>Teams</div>;
+        return <div><Teams/></div>;
       case "statistics":
         return <div><Statistics/></div>;
       default:

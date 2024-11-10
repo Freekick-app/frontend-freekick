@@ -33,6 +33,9 @@ export default function UserContests() {
     const { matchId } = router.query;
     const [myPools, setMyPools] = useState<Pool[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    
 
     useEffect(() => {
         if (matchId) {
@@ -42,8 +45,11 @@ export default function UserContests() {
 
     const fetchMyPools = async () => {
         try {
+            // console.log("Fetching pools for matchId:", matchId);
+          
+            setLoading(true);
             const response = await axiosInstance.get('/pools/my_pools/', {
-                params: { matchId },
+                params: { game_id: matchId },
                 headers: {
                     "Content-Type": "application/json",
                     Accept: "application/json",
@@ -55,13 +61,15 @@ export default function UserContests() {
             }
             const data: Pool[] = await response.data;
             setMyPools(data);
+            console.log(data);
             setError(null);
         } catch (error) {
             setError('An error occurred while fetching pools');
             console.error(error);
+        }finally {
+            setLoading(false); 
         }
     };
-
 
     const groupedPools = myPools.reduce((acc, pool) => {
         if (!acc[pool.bet_size]) {
@@ -71,9 +79,22 @@ export default function UserContests() {
         return acc;
     }, {} as Record<number, Pool[]>);
 
+
+ 
+
     return (
-        <div className=" rounded-lg m-2">
-            {Object.keys(groupedPools).length > 0 ? (
+        <div className="rounded-lg m-2">
+        {loading ? (
+            <div className="text-center text-white p-4">Loading...</div>
+        ) : error ? (
+            <div className="text-red-500 text-center">{error}</div>
+        ) : myPools.length === 0 ? (
+            <div className="text-center text-white p-4 flex flex-col gap-4 items-center">
+                <h1>You have not participated in any contests for this game.</h1>
+                <button className="bg-[#CEFF00] text-black p-2 rounded-lg">Join Contest</button>
+            </div>
+        ) : (
+            Object.keys(groupedPools).length > 0 ? (
                 Object.entries(groupedPools).map(([betSize, pools]) => (
                     <div key={betSize} className="mb-4 bg-[#2365EA] rounded-lg">
                         <div className="flex text-center p-4 text-sm justify-between">
@@ -92,7 +113,6 @@ export default function UserContests() {
                         </div>
                         {pools.map((pool) => (
                             <div key={pool.id} className="flex justify-between text-[12px] p-2 bg-slate-900 rounded-b-lg border-b-[1px]">
-                                {/* <h1>{pool.name}</h1> */}
                                 <h1>Pool {pool.id}</h1>
                                 <h1>{pool.current_participants}/{pool.max_participants}</h1>
                                 <h1>Won ${pool.participants[0]?.winning_amount ?? '0.00'}</h1>
@@ -103,8 +123,8 @@ export default function UserContests() {
                 ))
             ) : (
                 <div className="text-center text-white p-4">No pools available.</div>
-            )}
-            {error && <div className="text-red-500 text-center">{error}</div>}
-        </div>
+            )
+        )}
+    </div>
     );
 }

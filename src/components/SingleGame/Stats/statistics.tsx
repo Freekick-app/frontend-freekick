@@ -14,7 +14,7 @@ export default function Statistics() {
       case "Overview":
         return <div>ovierview</div>
       case "AwayTeam":
-        return <div>away team</div>;
+        return <div>away team</div>
       default:
         return null;
     }
@@ -22,23 +22,23 @@ export default function Statistics() {
 
   return (
     <div>
-      <div className="flex items-center bg-gray-500 px-2  text-white justify-between py-[12px] text-xs rounded-sm">
+      <div className="flex items-center bg-gray-700 px-2  text-white justify-between py-[12px] text-xs rounded-sm">
         <div
-          className={`text-gray-300 hover:text-white cursor-pointer ${activeTab === "HomeTeam" ? "text-[#CEFF00] font-bold border-b-2 border-[#CEFF00]" : ""
+          className={`text-gray-200 hover:text-white cursor-pointer ${activeTab === "HomeTeam" ? "text-white font-bold border-b-2 border-white" : ""
             }`}
           onClick={() => setActiveTab("HomeTeam")}
         >
           Home Team
         </div>
         <div
-          className={`text-gray-300 hover:text-white cursor-pointer ${activeTab === "Overview" ? "text-white font-bold border-b-2 border-white" : ""
+          className={`text-gray-200 hover:text-white cursor-pointer ${activeTab === "Overview" ? "text-white font-bold border-b-2 border-white" : ""
             }`}
           onClick={() => setActiveTab("Overview")}
         >
           Overview
         </div>
         <div
-          className={`text-gray-300 hover:text-white cursor-pointer ${activeTab === "AwayTeam" ? "text-white font-bold border-b-2 border-white" : ""
+          className={`text-gray-200 hover:text-white cursor-pointer ${activeTab === "AwayTeam" ? "text-white font-bold border-b-2 border-white" : ""
             }`}
           onClick={() => setActiveTab("AwayTeam")}
         >

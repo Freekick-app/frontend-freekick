@@ -2,8 +2,8 @@
 import React from "react";
 
 interface ContestOptionsProps {
-    handlePlaceBet: (betSize: number) => Promise<void>; // Function that returns a Promise (async function)
-    betSize: number; // Assuming betSize is a number
+    handlePlaceBet: (betSize: number) => Promise<void>; 
+    betSize: number; 
   }
 
 
