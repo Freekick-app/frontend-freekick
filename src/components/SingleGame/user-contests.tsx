@@ -64,6 +64,7 @@ export default function UserContests() {
             console.log(data);
             setError(null);
         } catch (error) {
+        
             setError('An error occurred while fetching pools');
             console.error(error);
         }finally {
@@ -122,7 +123,8 @@ export default function UserContests() {
                     </div>
                 ))
             ) : (
-                <div className="text-center text-white p-4">No pools available.</div>
+                <div className="text-center text-white p-4">No pools available. ||  <p>{error}</p></div>
+               
             )
         )}
     </div>

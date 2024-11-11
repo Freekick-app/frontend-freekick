@@ -85,8 +85,15 @@ const PlaceBet = () => {
       setBetState("bet_started");
       setError(null);
     } catch (error) {
-      console.error("Error placing bet:", error);
-      setError("Failed to place bet. Please try again.");
+      if (axios.isAxiosError(error) && error.response) {
+        const backendMessage = error.response.data?.error || "Failed to place bet. Please try again.";
+        setError(backendMessage);
+        alert(backendMessage);
+    
+      } else {
+        console.error("Error placing bet:", error);
+        setError("An unexpected error occurred. Please try again.");
+      }
     }
   };
 

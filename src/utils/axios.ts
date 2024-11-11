@@ -26,9 +26,9 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
     // If error is 401 and we haven't tried refreshing yet
     if (error.response?.status === 401 && !originalRequest._retry) {
+
       originalRequest._retry = true;
 
       try {
@@ -47,7 +47,7 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         // If refresh fails, clear tokens and redirect to login
         AuthService.clearTokens();
-        window.location.href = '/';
+        // window.location.href = '/';
         return Promise.reject(refreshError);
       }
     }

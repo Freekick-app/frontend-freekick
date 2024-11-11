@@ -47,6 +47,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   }, []);
   return (
+    
     <div className="flex items-center justify-center min-h-screen">
       <div className="max-w-[500px] w-full items-center bg-black min-h-screen">   
        {!ignoreLayoutPaths.includes(router.pathname) && <div className="sticky top-0 w-full z-10">
