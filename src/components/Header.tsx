@@ -6,7 +6,9 @@
 import { BiWalletAlt } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import LoginButton from "./LoginButton";
-import { TonConnectButton } from "@tonconnect/ui-react";
+import LoginWithTonButton from "./LoginWithTonButton"
+import { TonProvider } from '../services/TonProvider';
+// import { TonConnectButton } from "@tonconnect/ui-react";
 export default function Header() {
     return (
       <header className="flex flex-row items-center justify-between px-2 h-[60px] z-50 bg-black text-white">
@@ -16,7 +18,8 @@ export default function Header() {
         </div>
         <div className="flex ">
           {/* <LoginButton/> */}
-          <TonConnectButton />
+          <LoginWithTonButton />
+          {/* <TonConnectButton /> */}
         {/* <button className="text-3xl"><IoMdNotificationsOutline/></button>
         <button className="text-white text-2xl px-3 py-2 bg-slate-800 rounded-full"><BiWalletAlt /></button> */}
         </div>
@@ -26,3 +29,6 @@ export default function Header() {
     );
   }
   
+{/* <TonProvider>
+  <Component {...pageProps} />
+</TonProvider> */}
