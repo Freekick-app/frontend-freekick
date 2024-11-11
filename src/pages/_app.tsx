@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import type { AppProps } from "next/app";
 import { useEffect, useState } from "react";
 import { AuthService, AuthTokens } from "@/services/auth";
+import { TonConnectUIProvider } from '@tonconnect/ui-react';
 
 export default function App({ Component, pageProps }: AppProps) {
  const router = useRouter();
@@ -47,8 +48,8 @@ export default function App({ Component, pageProps }: AppProps) {
 
   }, []);
   return (
-    
     <div className="flex items-center justify-center min-h-screen">
+      <TonConnectUIProvider manifestUrl='https://tan-occupational-rook-922.mypinata.cloud/ipfs/QmSVy6aYSip9A7bgSMvbijw7b1Ytw5gdyzaZgKGiis47bf'>
       <div className="max-w-[500px] w-full items-center bg-black min-h-screen">   
        {!ignoreLayoutPaths.includes(router.pathname) && <div className="sticky top-0 w-full z-10">
           <Header />
@@ -64,6 +65,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <Navbar />
         </div>}
       </div>
+     </TonConnectUIProvider>
     </div>
   );
 }
