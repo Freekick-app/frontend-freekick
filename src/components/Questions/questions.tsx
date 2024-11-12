@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
+import toast from "react-hot-toast";
 
 interface Option {
     id: string;
@@ -59,12 +60,26 @@ const Questions: React.FC<QuestionsProps> = ({
     };
 
     const handleNextClick = () => {
+        // const selected = selectedOptions[currentQuestion.id];
+        // if (selected) {
+        //     handleNext(currentQuestion.id, selected, question_type);
+        // } else {
+        //     toast.error("Please select option before proceeding.");
+
+        // }
         const selected = selectedOptions[currentQuestion.id];
-        if (selected) {
-            handleNext(currentQuestion.id, selected, question_type);
-        } else {
-            alert("Please select an option before proceeding.");
+
+        if (!selected) {
+            toast.error("Please select an option before proceeding.");
+            return;
         }
+
+        if (["multi_select", "ordered_multi_select"].includes(question_type) && selected.length < 3) {
+            toast.error("Please select at least 3 options before proceeding.");
+            return;
+        }
+
+        handleNext(currentQuestion.id, selected, question_type);
     };
 
     return (

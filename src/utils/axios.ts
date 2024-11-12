@@ -48,6 +48,7 @@ axiosInstance.interceptors.response.use(
         // If refresh fails, clear tokens and redirect to login
         AuthService.clearTokens();
         // window.location.href = '/';
+       
         return Promise.reject(refreshError);
       }
     }

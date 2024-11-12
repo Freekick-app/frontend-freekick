@@ -11,6 +11,7 @@ import ContestOptions from "@/components/SingleGame/contest-options";
 import UserContests from "@/components/SingleGame/user-contests";
 import Statistics from "@/components/SingleGame/Stats/statistics";
 import Teams from "@/components/SingleGame/Teams/teams";
+import toast from "react-hot-toast";
 
 
 
@@ -53,8 +54,9 @@ const PlaceBet = () => {
   }, [poolId]);
 
   const handlePlaceBet = async (betSize: number) => {
-    if (!authCredentials) {
+        if (!authCredentials) {
       setError("Please login to place a bet.");
+      toast.error("Please login to place a bet.");
       return;
     }
     try {
@@ -88,7 +90,8 @@ const PlaceBet = () => {
       if (axios.isAxiosError(error) && error.response) {
         const backendMessage = error.response.data?.error || "Failed to place bet. Please try again.";
         setError(backendMessage);
-        alert(backendMessage);
+        // alert(backendMessage);
+        toast.error(backendMessage);
     
       } else {
         console.error("Error placing bet:", error);

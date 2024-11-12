@@ -8,6 +8,7 @@ import type { AppProps } from "next/app";
 import { useEffect, useState } from "react";
 import { AuthService, AuthTokens } from "@/services/auth";
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
+import { Toaster } from "react-hot-toast";
 
 export default function App({ Component, pageProps }: AppProps) {
  const router = useRouter();
@@ -59,6 +60,7 @@ export default function App({ Component, pageProps }: AppProps) {
         
         <div className=" items-center justify-center pt-2 pb-20">
           <Component {...pageProps} />
+          <Toaster position="bottom-center" />
         </div>
 
         {!ignoreLayoutPaths.includes(router.pathname) && <div className="fixed bottom-0 w-full z-10  bg-opacity-50">

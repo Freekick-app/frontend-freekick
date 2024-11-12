@@ -1,6 +1,8 @@
+import { AuthService } from "@/services/auth";
 import axiosInstance from "@/utils/axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 type Participant = {
     id: number;
@@ -33,17 +35,38 @@ export default function UserContests() {
     const { matchId } = router.query;
     const [myPools, setMyPools] = useState<Pool[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [authCredentials, setAuthCredentials] = useState<{ token: string } | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-
     
 
     useEffect(() => {
-        if (matchId) {
+        const token = AuthService.getAccessToken();
+        // const username = localStorage.getItem("username");
+        // const password = localStorage.getItem("password");
+        if (token) {
+          setAuthCredentials({ token });
+        } else {
+          setError("Please login to See Your Contest.");
+          toast.error("Please login to See Your Contest.");
+          setLoading(false);
+        }
+      }, []);
+
+    useEffect(() => {
+        if (matchId && authCredentials) {
             fetchMyPools();
         }
-    }, [matchId]);
-
+    }, [matchId, authCredentials]);
+    
     const fetchMyPools = async () => {
+     
+        if(!authCredentials){
+            setError("Please login to See Youn Contest.");
+            // toast.error("Please login to See Your Contest.");
+            setLoading(false);
+            return;
+        }
+
         try {
             // console.log("Fetching pools for matchId:", matchId);
           
@@ -64,9 +87,9 @@ export default function UserContests() {
             console.log(data);
             setError(null);
         } catch (error) {
-        
             setError('An error occurred while fetching pools');
             console.error(error);
+        
         }finally {
             setLoading(false); 
         }
@@ -81,7 +104,6 @@ export default function UserContests() {
     }, {} as Record<number, Pool[]>);
 
 
- 
 
     return (
         <div className="rounded-lg m-2">
@@ -118,6 +140,7 @@ export default function UserContests() {
                                 <h1>{pool.current_participants}/{pool.max_participants}</h1>
                                 <h1>Won ${pool.participants[0]?.winning_amount ?? '0.00'}</h1>
                                 <h1>Rank {pool.participants[0]?.rank ?? 'N/A'}</h1>
+                                <h1>Status: {pool.status === "completed" ? "Quiz Completed" : "In Progress"}</h1>
                             </div>
                         ))}
                     </div>
