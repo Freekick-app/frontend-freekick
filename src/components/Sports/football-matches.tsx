@@ -36,7 +36,7 @@ const FootballMatches = () => {
 
   useEffect(() => {
     axiosInstanceWithoutAuth
-        .get(`/sports/games`, {
+        .get(`/sports/games/`, {
           headers: {
             // Authorization: `Bearer ${token}`,
           },

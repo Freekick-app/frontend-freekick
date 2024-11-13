@@ -20,7 +20,7 @@ export default function Statistics() {
   const FetchStats = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get(`/sports/games/${matchId}/player_stats`, {
+      const response = await axiosInstance.get(`/sports/games/${matchId}/player_stats/`, {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -80,26 +80,90 @@ export default function Statistics() {
   const renderRushingTable = () => (
     <div className="overflow-x-auto p-2">
       <h1>Rushing</h1>
-      <table className="min-w-full text-xs bg-white border border-gray-300 text-gray-800">
-        <thead className="bg-gray-100 border-b">
-          <tr>
-            <th className="text-left py-3 px-4 font-semibold">Player</th>
-            <th className="text-center py-3 px-4 font-semibold">ATT</th>
-            <th className="text-center py-3 px-4 font-semibold">YDS</th>
-            <th className="text-center py-3 px-4 font-semibold">AVG</th>
-            <th className="text-center py-3 px-4 font-semibold">TD</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className="border-b">
-            <td className="py-3 px-4 text-blue-600 hover:underline cursor-pointer">Player Name #12</td>
-            <td className="text-center py-3 px-4">15</td>
-            <td className="text-center py-3 px-4">85</td>
-            <td className="text-center py-3 px-4">5.6</td>
-            <td className="text-center py-3 px-4">1</td>
-          </tr>
-        </tbody>
-      </table>
+      <div className="flex">
+
+  <table className="border-collapse text-right">
+    <thead className="bg-gray-100">
+      <tr>
+        <th className="px-4 py-2"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="p-4 border-b">
+          <div className="flex items-center space-x-2">
+            <a href="https://www.espn.in/nfl/player/_/id/3043078/derrick-henry" className="text-blue-600 truncate">Derrick Henry</a>
+            <span className="text-gray-500">#22</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td className="p-4 border-b">
+          <div className="flex items-center space-x-2">
+            <a href="https://www.espn.in/nfl/player/_/id/3916387/lamar-jackson" className="text-blue-600 truncate">Lamar Jackson</a>
+            <span className="text-gray-500">#8</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td className="p-4 border-b">
+          <div className="flex items-center space-x-2">
+            <a href="https://www.espn.in/nfl/player/_/id/4038441/justice-hill" className="text-blue-600 truncate">Justice Hill</a>
+            <span className="text-gray-500">#43</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td className="p-4 border-b text-center font-semibold">Team</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div className="overflow-auto">
+    <table className="border-collapse text-right w-full">
+      <thead className="bg-gray-100">
+        <tr>
+          <th className="px-4 py-2">CAR</th>
+          <th className="px-4 py-2">YDS</th>
+          <th className="px-4 py-2">AVG</th>
+          <th className="px-4 py-2">TD</th>
+          <th className="px-4 py-2">LONG</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td className="px-4 py-2 border-b">16</td>
+          <td className="px-4 py-2 border-b">68</td>
+          <td className="px-4 py-2 border-b">4.3</td>
+          <td className="px-4 py-2 border-b">1</td>
+          <td className="px-4 py-2 border-b">11</td>
+        </tr>
+        <tr>
+          <td className="px-4 py-2 border-b">7</td>
+          <td className="px-4 py-2 border-b">33</td>
+          <td className="px-4 py-2 border-b">4.7</td>
+          <td className="px-4 py-2 border-b">0</td>
+          <td className="px-4 py-2 border-b">10</td>
+        </tr>
+        <tr>
+          <td className="px-4 py-2 border-b">2</td>
+          <td className="px-4 py-2 border-b">-2</td>
+          <td className="px-4 py-2 border-b">-1.0</td>
+          <td className="px-4 py-2 border-b">0</td>
+          <td className="px-4 py-2 border-b">0</td>
+        </tr>
+        <tr>
+          <td className="px-4 py-2 font-semibold">25</td>
+          <td className="px-4 py-2 font-semibold">99</td>
+          <td className="px-4 py-2 font-semibold">4.0</td>
+          <td className="px-4 py-2 font-semibold">1</td>
+          <td className="px-4 py-2 font-semibold">11</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
     </div>
   );
 

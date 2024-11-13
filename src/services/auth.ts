@@ -55,6 +55,7 @@ export class AuthService {
   }
 
   static saveTokens(tokens: AuthTokens): void {
+    debugger
     console.log(tokens);
     localStorage.setItem('access_token', tokens.access);
     localStorage.setItem('refresh_token', tokens.refresh);

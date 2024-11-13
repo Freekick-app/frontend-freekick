@@ -35,7 +35,7 @@ const MyContests = () => {
     const token = AuthService.getAccessToken();
     if (token) {
       axiosInstance
-        .get("/sports/games", {
+        .get("/sports/games/", {
           headers: {
             Authorization: `Bearer ${token}`
           },
