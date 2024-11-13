@@ -15,8 +15,9 @@ export default function Header() {
     return (
       <header className="flex flex-row items-center justify-between px-2 h-[60px] z-50 bg-black text-white">
         <div className="flex items-center space-x-4">
-          <div className="rounded-full w-8 h-8 bg-gray-500"></div>
-          <span className="text-[12px]">Hello, Username</span>
+          <div className="rounded-full w-8 h-8 bg-gray-500">
+          </div>
+          <span className="text-[12px]">Hello 👋</span>
         </div>
         <div className="flex ">
           <ConnectWallet />

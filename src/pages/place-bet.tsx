@@ -17,7 +17,7 @@ import toast from "react-hot-toast";
 
 const PlaceBet = () => {
   const router = useRouter();
-  const { matchId } = router.query;
+  const { matchId, initPoolId } = router.query;
   const [poolId, setPoolId] = useState<string | undefined>();
   const [betSize] = useState<number>(10);
   const [error, setError] = useState<string | null>(null);
@@ -35,6 +35,26 @@ const PlaceBet = () => {
 
   const betSizes = [100, 50, 20, 10, 5, 1];
 
+  useEffect(() => {
+    if (initPoolId) {
+      const getQuestions = async () => {
+        try {
+          const response = await axiosInstance.get(`/pools/${initPoolId}/questions/`);
+          const data = await response.data;
+          setQuestions(data?.questions);
+          // setCurrentQuestionIndex on which has user_answer as null check from 0 to end
+          const currentQuestionIndex = data?.questions.findIndex((question: any) => !question.user_answer);
+          setCurrentQuestionIndex(currentQuestionIndex === -1 ? 0 : currentQuestionIndex);
+          setPoolId(initPoolId as string);
+          setBetState("bet_started");
+        } catch (error) {
+          console.error("Error fetching questions:", error);
+          setError("Failed to fetch questions. Please try again.");
+        }
+      };
+      getQuestions();
+    }
+  }, [initPoolId]);
 
   useEffect(() => {
     const token = AuthService.getAccessToken();
@@ -77,13 +97,14 @@ const PlaceBet = () => {
 
       const questionsData = await response.data;
 
-      console.log(questionsData, "response")
+      // console.log(questionsData, "response")
       questionsData?.questions.forEach((question: any) => {
         console.log(`Question ID: ${question.id}, Question Type: ${question.question_type}`);
       });
       // console.log(questionsData);
       setPoolId(questionsData.pool_id);
       setQuestions(questionsData?.questions);
+    
       setBetState("bet_started");
       setError(null);
     } catch (error) {
@@ -101,14 +122,17 @@ const PlaceBet = () => {
   };
 
   const handleNext = () => {
+ 
     setCurrentQuestionIndex((prevIndex) => {
-      const nextIndex = prevIndex < questions.length - 1 ? prevIndex + 1 : prevIndex;
-      if (nextIndex === questions.length - 1) {
+      const nextIndex = prevIndex <= questions.length - 1 ? prevIndex + 1 : prevIndex;
+      if (nextIndex === questions.length) {
         setBetState("submit");
       }
       return nextIndex;
     });
   };
+
+  // console.log('questions', questions?.length)
 
   const handlePrevious = () => {
     setCurrentQuestionIndex((prevIndex) =>
@@ -234,7 +258,7 @@ const PlaceBet = () => {
     if (matchId) {
       showGameDetails();
       // MyPools();
-      console.log(gameDetails)
+      // console.log(gameDetails)
     }
   }, [matchId]);
 
@@ -372,7 +396,7 @@ const PlaceBet = () => {
                     <h1 className="text-[8px]">4-5, 2nd AFC South</h1>
                   </div>
                     <img
-                      src={gameDetails.away_team.logo_url}
+                      src={gameDetails?.away_team?.logo_url}
                       alt="Away Team logo"
                       className=" h-12"
                     />
