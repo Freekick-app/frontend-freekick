@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import {useIsConnectionRestored, useTonConnectUI, useTonWallet} from "@tonconnect/ui-react";
 import { FC } from 'react';
 import {axiosInstanceWithoutAuth} from "@/utils/axios";
+import { AuthService } from '@/services/auth';
 
 const localStorageKey = 'access_token';
 const payloadTTLMS = 1000 * 60 * 20;
@@ -55,6 +56,8 @@ const ConnectWallet: FC = () => {
             proof: wallet.connectItems.tonProof.proof, wallet: wallet.account
           }).then((result:any) => {
                 if (result) {
+                  // const token = AuthService.getAccessToken()
+
                     // setToken(result);
                     localStorage.setItem(localStorageKey, result);
                 } else {
