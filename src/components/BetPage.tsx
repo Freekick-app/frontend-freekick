@@ -29,19 +29,19 @@ export default function BetPage() {
      { 
       name: "Volleyball", 
       icon: <MdOutlineSportsVolleyball />, 
-      logo: "./volleyballLogo.png", 
+      logo: "./fivb2.png", 
       league: "FIVB" 
     },
     { 
       name: "Soccer", 
       icon: <IoIosFootball />, 
-      logo: "./soccerLogo.png", 
+      logo: "./fifa.png", 
       league: "FIFA" 
     },
     { 
       name: "Basketball", 
       icon: <FaBasketballBall />, 
-      logo: "./nbaLogo.png", 
+      logo: "./nba2.png", 
       league: "NBA" 
     },
   ];
@@ -87,7 +87,7 @@ export default function BetPage() {
                   </span>
                 </div>
                 {selectedSport === sport.name && (
-                  <div className="px-2 py-1 rounded-full">
+                  <div className="px-3 py-1 rounded-full">
                     <span className="text-white font-normal text-xs">{sport.name}</span>
                   </div>
                 )}
@@ -101,7 +101,7 @@ export default function BetPage() {
           <div className='flex items-center justify-between px-4'>
             {/* <h2 className="text-[12px] font-bold">{selectedSport} Matches</h2> */}
            <div className="flex gap-2 items-center">
-              <img src={selectedSportInfo?.logo } alt={`${selectedSportInfo?.league} logo`} className="text-white h-10 w-8" />
+              <img src={selectedSportInfo?.logo } alt={`${selectedSportInfo?.league} logo`} className="text-white h-10 " />
               <h2 className="font-bold">{selectedSportInfo?.league}</h2>
             </div>
           
