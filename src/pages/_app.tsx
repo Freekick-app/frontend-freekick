@@ -9,6 +9,9 @@ import { useEffect, useState } from "react";
 import { AuthService, AuthTokens } from "@/services/auth";
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { Toaster } from "react-hot-toast";
+import Script from 'next/script'
+import Head from "next/head";
+
 
 export default function App({ Component, pageProps }: AppProps) {
  const router = useRouter();

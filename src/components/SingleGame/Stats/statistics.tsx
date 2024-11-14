@@ -2,18 +2,27 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import axiosInstance from "@/utils/axios";
 import { useEffect, useState } from "react";
+import Router, { useRouter } from "next/router";
 
 export default function Statistics() {
+  const router = useRouter();
+  const {matchId} = router.query;
   const [activeTab, setActiveTab] = useState("Overview");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<any[]>([]);
+  const [gameStats, setgameStats] = useState<any[]>([]);
+  const [gameScore, setGameScore] = useState<any[]>([]);
+  const [homeTeamName, setHomeTeamName] = useState<any | null>(null);
+  const [awayTeamName, setAwayTeamName] = useState<any | null>(null);
 
-  const matchId = 42;
+  // const matchId = 76;
 
   useEffect(() => {
     if (matchId) {
       FetchStats();
+      FetchGameStats();
+      FetchTeamScore();
     }
   }, [matchId])
 
@@ -41,178 +50,160 @@ export default function Statistics() {
     }
   };
 
-  const renderPassingTable = () => (
-    <div className="overflow-x-auto p-2">
-      <h1>Passing</h1>
-      <table className="min-w-full text-xs bg-white border border-gray-300 text-gray-800">
-        <thead className="bg-gray-100 border-b">
-          <tr>
-            <th className="text-left py-3 px-4 font-semibold">Player</th>
-            <th className="text-center py-3 px-4 font-semibold">C/ATT</th>
-            <th className="text-center py-3 px-4 font-semibold">YDS</th>
-            <th className="text-center py-3 px-4 font-semibold">TD</th>
-            <th className="text-center py-3 px-4 font-semibold">INT</th>
-            <th className="text-center py-3 px-4 font-semibold">SACKS</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className="border-b">
-            <td className="py-3 px-4 text-blue-600 hover:underline cursor-pointer">Joe Burrow #9</td>
-            <td className="text-center py-3 px-4">34/56</td>
-            <td className="text-center py-3 px-4">428</td>
-            <td className="text-center py-3 px-4">4</td>
-            <td className="text-center py-3 px-4">0</td>
-            <td className="text-center py-3 px-4">3-7</td>
-          </tr>
-          <tr className="border-b font-semibold">
-            <td className="py-3 px-4">TEAM</td>
-            <td className="text-center py-3 px-4">34/56</td>
-            <td className="text-center py-3 px-4">421</td>
-            <td className="text-center py-3 px-4">4</td>
-            <td className="text-center py-3 px-4">0</td>
-            <td className="text-center py-3 px-4">3-7</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
+  const FetchGameStats = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(`/sports/games/${matchId}/stats/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+      if (response.status !== 200) {
+        setError('Error: Failed to fetch the stats');
+        return;
+      }
+      const data = await response.data;
+      setgameStats(data);
+      setError(null);
+    } catch (error) {
+      setError("Error loading Stats");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const renderRushingTable = () => (
-    <div className="overflow-x-auto p-2">
-      <h1>Rushing</h1>
-      <div className="flex">
+  const FetchTeamScore = async() => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(`/sports/games/${matchId}/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+      if (response.status !== 200) {
+        setError('Error: Failed to fetch the scores');
+        return;
+      }
+      const data = await response.data;
+      setHomeTeamName(data?.home_team?.display_name);
+      setAwayTeamName(data?.away_team?.display_name);
+      setGameScore(data);
+      setError(null);
+    } catch (error) {
+      setError("Error loading Stats");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  <table className="border-collapse text-right">
-    <thead className="bg-gray-100">
-      <tr>
-        <th className="px-4 py-2"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td className="p-4 border-b">
-          <div className="flex items-center space-x-2">
-            <a href="https://www.espn.in/nfl/player/_/id/3043078/derrick-henry" className="text-blue-600 truncate">Derrick Henry</a>
-            <span className="text-gray-500">#22</span>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td className="p-4 border-b">
-          <div className="flex items-center space-x-2">
-            <a href="https://www.espn.in/nfl/player/_/id/3916387/lamar-jackson" className="text-blue-600 truncate">Lamar Jackson</a>
-            <span className="text-gray-500">#8</span>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td className="p-4 border-b">
-          <div className="flex items-center space-x-2">
-            <a href="https://www.espn.in/nfl/player/_/id/4038441/justice-hill" className="text-blue-600 truncate">Justice Hill</a>
-            <span className="text-gray-500">#43</span>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td className="p-4 border-b text-center font-semibold">Team</td>
-      </tr>
-    </tbody>
-  </table>
+  const getLastWord = (str: string) => {
+    const words = str.split(" ");
+    return words[words.length - 1];
+  };
 
-  <div className="overflow-auto">
-    <table className="border-collapse text-right w-full">
-      <thead className="bg-gray-100">
-        <tr>
-          <th className="px-4 py-2">CAR</th>
-          <th className="px-4 py-2">YDS</th>
-          <th className="px-4 py-2">AVG</th>
-          <th className="px-4 py-2">TD</th>
-          <th className="px-4 py-2">LONG</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td className="px-4 py-2 border-b">16</td>
-          <td className="px-4 py-2 border-b">68</td>
-          <td className="px-4 py-2 border-b">4.3</td>
-          <td className="px-4 py-2 border-b">1</td>
-          <td className="px-4 py-2 border-b">11</td>
-        </tr>
-        <tr>
-          <td className="px-4 py-2 border-b">7</td>
-          <td className="px-4 py-2 border-b">33</td>
-          <td className="px-4 py-2 border-b">4.7</td>
-          <td className="px-4 py-2 border-b">0</td>
-          <td className="px-4 py-2 border-b">10</td>
-        </tr>
-        <tr>
-          <td className="px-4 py-2 border-b">2</td>
-          <td className="px-4 py-2 border-b">-2</td>
-          <td className="px-4 py-2 border-b">-1.0</td>
-          <td className="px-4 py-2 border-b">0</td>
-          <td className="px-4 py-2 border-b">0</td>
-        </tr>
-        <tr>
-          <td className="px-4 py-2 font-semibold">25</td>
-          <td className="px-4 py-2 font-semibold">99</td>
-          <td className="px-4 py-2 font-semibold">4.0</td>
-          <td className="px-4 py-2 font-semibold">1</td>
-          <td className="px-4 py-2 font-semibold">11</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
 
-    </div>
-  );
+  const renderOverviewTable = () => {
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>{error}</p>;
+    if (!gameStats || gameStats.length === 0) {
+      return <p className="text-center text-white">Match is yet to start</p>;
+    }
 
-  const renderReceivingTable = () => (
-    <div className="overflow-x-auto p-2">
-      <h1>Receiving</h1>
-      <table className="min-w-full text-xs bg-white border border-gray-300 text-gray-800">
-        <thead className="bg-gray-100 border-b">
-          <tr>
-            <th className="text-left py-3 px-4 font-semibold">Player</th>
-            <th className="text-center py-3 px-4 font-semibold">REC</th>
-            <th className="text-center py-3 px-4 font-semibold">YDS</th>
-            <th className="text-center py-3 px-4 font-semibold">AVG</th>
-            <th className="text-center py-3 px-4 font-semibold">TD</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className="border-b">
-            <td className="py-3 px-4 text-blue-600 hover:underline cursor-pointer">Player Name #87</td>
-            <td className="text-center py-3 px-4">10</td>
-            <td className="text-center py-3 px-4">120</td>
-            <td className="text-center py-3 px-4">12.0</td>
-            <td className="text-center py-3 px-4">2</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
+    const teamData = gameStats || []; // Make sure gameStats has the data
+
+    return (
+      <div className="flex flex-col space-y-4 p-1 font-semibold mt-2">
+        {teamData.length > 0 && (
+          <table className="w-full text-center text-sm border-collapse border border-gray-300 rounded-2xl overflow-hidden">
+            <thead>
+              <tr className="bg-gray-600 ">
+                <th className="border p-2 ">Stats</th>
+                <th className="border p-2 ">
+                  <img src={teamData[0].team.logo_url} alt={`${teamData[0].team.display_name} logo`} className="w-10 h-10 mx-auto" />
+                </th>
+                <th className="border p-2">
+                  <img src={teamData[1].team.logo_url} alt={`${teamData[1].team.display_name} logo`} className="w-10 h-10 mx-auto" />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="bg-gray-500">
+                <td className="border p-2 text-start ">1st Downs</td>
+                <td className="border p-2">{teamData[0].first_downs}</td>
+                <td className="border p-2">{teamData[1].first_downs}</td>
+              </tr>
+              <tr className="bg-gray-200 text-black ">
+                <td className="border p-2 text-start">Total Yards</td>
+                <td className="border p-2">{teamData[0].total_yards}</td>
+                <td className="border p-2">{teamData[1].total_yards}</td>
+              </tr>
+              <tr className="bg-gray-500 ">
+                <td className="border p-2 text-start">Passing Yards</td>
+                <td className="border p-2">{teamData[0].passing_yards}</td>
+                <td className="border p-2">{teamData[1].passing_yards}</td>
+              </tr>
+              <tr className="bg-gray-200 text-black ">
+                <td className="border p-2 text-start">Rushing Yards</td>
+                <td className="border p-2">{teamData[0].rushing_yards}</td>
+                <td className="border p-2">{teamData[1].rushing_yards}</td>
+              </tr>
+              <tr className="bg-gray-500 ">
+                <td className="border p-2 text-start">Penalties</td>
+                <td className="border p-2">
+                  {teamData[0].penalties} - {teamData[0].penalty_yards} 
+                </td>
+                <td className="border p-2">
+                  {teamData[1].penalties} - {teamData[1].penalty_yards} 
+                </td>
+              </tr>
+              <tr className="bg-gray-200 text-black ">
+                <td className="border p-2 text-start">Turnovers</td>
+                <td className="border p-2">{teamData[0].turnovers}</td>
+                <td className="border p-2">{teamData[0].turnovers}</td>
+              </tr>
+              <tr className="bg-gray-500 ">
+                <td className="border p-2 text-start">3rd Down Efficiency</td>
+                <td className="border p-2">{teamData[0].third_down_conversions}</td>
+                <td className="border p-2">{teamData[1].third_down_conversions}</td>
+              </tr>
+              <tr className="bg-gray-200 text-black ">
+                <td className="border p-2 text-start">4th Down Efficiency</td>
+                <td className="border p-2">{teamData[0].fourth_down_conversions}</td>
+                <td className="border p-2">{teamData[1].fourth_down_conversions}</td>
+              </tr>
+              <tr className="bg-gray-500 ">
+                <td className="border p-2 text-start">Red Zone </td>
+                <td className="border p-2">{teamData[0].red_zone_conversions}</td>
+                <td className="border p-2">{teamData[1].red_zone_conversions}</td>
+              </tr>
+              <tr className="bg-gray-200 text-black">
+                <td className="border p-2 text-start">Time of Possession</td>
+                <td className="border p-2">{teamData[0].time_of_possession}</td>
+                <td className="border p-2">{teamData[1].time_of_possession}</td>
+              </tr>
+            </tbody>
+          </table>
+        )}
+      </div>
+    );
+  };
+
 
   const renderOptions = () => {
     switch (activeTab) {
       case "HomeTeam":
         return (
           <div>
-            {renderPassingTable()}
-            {renderRushingTable()}
-            {renderReceivingTable()}
-            {/* Add more tables as needed */}
+
           </div>
         );
       case "Overview":
-        return <div>Overview content goes here</div>;
+        return <div>{renderOverviewTable()}</div>;
       case "AwayTeam":
         return (
           <div>
-            {renderPassingTable()}
-            {renderRushingTable()}
-            {renderReceivingTable()}
-            {/* Duplicate tables for the Away team */}
           </div>
         );
       default:
@@ -227,7 +218,7 @@ export default function Statistics() {
           className={`text-gray-200 hover:text-white cursor-pointer ${activeTab === "HomeTeam" ? "text-white font-bold border-b-2 border-white" : ""}`}
           onClick={() => setActiveTab("HomeTeam")}
         >
-          Home Team
+          { homeTeamName||"Home Team"}
         </div>
         <div
           className={`text-gray-200 hover:text-white cursor-pointer ${activeTab === "Overview" ? "text-white font-bold border-b-2 border-white" : ""}`}
@@ -239,7 +230,7 @@ export default function Statistics() {
           className={`text-gray-200 hover:text-white cursor-pointer ${activeTab === "AwayTeam" ? "text-white font-bold border-b-2 border-white" : ""}`}
           onClick={() => setActiveTab("AwayTeam")}
         >
-          Away Team
+         { awayTeamName ||" Away Team"}
         </div>
       </div>
       {renderOptions()}

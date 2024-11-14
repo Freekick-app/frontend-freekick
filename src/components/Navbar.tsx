@@ -28,7 +28,7 @@ export default function Navbar() {
         <SlCalender/>
         </button>
         <div className="w-10 h-10  flex items-center cursor-pointer justify-center rounded-full bg-[#CEFF00]">
-        <GoGift/>
+          <Link href="/rewards"><GoGift/></Link>
         </div>
         <div className="w-10 h-10  flex items-center cursor-pointer justify-center rounded-full bg-[#CEFF00]">
         <IoSettingsOutline/>

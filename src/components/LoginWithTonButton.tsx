@@ -144,10 +144,12 @@ const ConnectWallet: FC = () => {
         className={`p-2 font-semibold text-xs text-white rounded-lg ${
           isLoading
             ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-blue-500 hover:bg-blue-600'
+            : 'bg-[#0098EA] hover:scale-105'
         }`}
       >
-        Connect TON Wallet
+        <div className='flex gap-1'><img src="./ton_symbol.png" alt="Ton logo" className='h-4'/>
+        <h1>Connect Wallet</h1></div>
+        
       </button>
     )}
   </div>

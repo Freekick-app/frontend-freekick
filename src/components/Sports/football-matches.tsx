@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
-import {axiosInstanceWithoutAuth} from "@/utils/axios";
+import { axiosInstanceWithoutAuth } from "@/utils/axios";
 import { useRouter } from "next/router";
 // import { AuthService } from "@/services/auth";
 
@@ -29,36 +29,36 @@ const FootballMatches = () => {
 
 
 
-  
+
 
 
 
 
   useEffect(() => {
     axiosInstanceWithoutAuth
-        .get(`/sports/games/`, {
-          headers: {
-            // Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          const today = new Date();
-          const oneWeekFromToday = new Date();
-          oneWeekFromToday.setDate(today.getDate() + 7);
+      .get(`/sports/games/`, {
+        headers: {
+          // Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        const today = new Date();
+        const oneWeekFromToday = new Date();
+        oneWeekFromToday.setDate(today.getDate() + 7);
 
-          // Filter matches occurring within the next week
-          const filteredMatches = response.data.filter((match: Match) => {
-            const matchDate = new Date(match.date);
-            return matchDate >= today && matchDate <= oneWeekFromToday;
-          });
+        // Filter matches occurring within the next week
+        const filteredMatches = response.data.filter((match: Match) => {
+          const matchDate = new Date(match.date);
+          return matchDate >= today && matchDate <= oneWeekFromToday;
+        });
 
-          setData(filteredMatches);
-        })
-        .catch((error) => {
-          setError("Failed to fetch data");
-          console.error("Fetch error:", error);
-        })
-        .finally(() => setLoading(false));
+        setData(filteredMatches);
+      })
+      .catch((error) => {
+        setError("Failed to fetch data");
+        console.error("Fetch error:", error);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const handlePlaceBet = (matchId: number) => {
@@ -91,51 +91,54 @@ const FootballMatches = () => {
 
   return (
     <div>
-      {loading && <p>Loading...</p>}
+      {loading && <div className="items-center justify-center flex">
+        <div className="loader border-t-2 rounded-full border-yellow-500 bg-yellow-300 animate-spin
+              aspect-square w-8 flex justify-center items-center text-yellow-700">$</div>
+      </div>}
       {error && <p className="text-red-500">{error}</p>}
-    <div className="flex flex-col gap-1">
-      {data.map((match) => (
-        <div key={match.id} className="bg-gray-700 w-full rounded-2xl h-[70px] p-1 my-4 relative z-0">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <img
-                src={match.home_team.logo_url}
-                alt={match.home_team.name}
-                className="rounded-full  h-[60px]"
-              />
-              <div className="text-white font-semibold text-[12px] ml-4 ">
-                {getLastWord(match.home_team.display_name)}
+      <div className="flex flex-col gap-1">
+        {data.map((match) => (
+          <div key={match.id} className="bg-gray-700 w-full rounded-2xl h-[70px] p-1 my-4 relative z-0">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <img
+                  src={match.home_team.logo_url}
+                  alt={match.home_team.name}
+                  className="rounded-full  h-[60px]"
+                />
+                <div className="text-white font-semibold text-[12px] ml-4 ">
+                  {getLastWord(match.home_team.display_name)}
+                </div>
+              </div>
+
+              <div className="text-center absolute inset-x-0 text-gray-400 text-[8px] flex flex-col justify-center items-center">
+                <div>{formatDate(match.date)}</div>
+                <div>{formatTime(match.date)}</div>
+              </div>
+
+              <div className="flex items-center">
+                <div className="text-white font-semibold text-[12px] mr-4 ">
+                  {getLastWord(match.away_team.display_name)}
+                </div>
+                <img
+                  src={match.away_team.logo_url}
+                  alt={match.away_team.name}
+                  className="rounded-full  h-[60px]"
+                />
               </div>
             </div>
-
-            <div className="text-center absolute inset-x-0 text-gray-400 text-[8px] flex flex-col justify-center items-center">
-              <div>{formatDate(match.date)}</div> 
-              <div>{formatTime(match.date)}</div> 
+            <div className="flex items-center justify-center z-10 absolute inset-x-0 top-[50px]">
+              <button
+                className="  bg-blue-600 py-2 rounded-full px-8  text-white text-[10px] font-semibold"
+                onClick={() => handlePlaceBet(match.id)}
+              >
+                Play Now
+              </button>
             </div>
 
-            <div className="flex items-center">
-              <div className="text-white font-semibold text-[12px] mr-4 ">
-                {getLastWord(match.away_team.display_name)}
-              </div>
-              <img
-                src={match.away_team.logo_url}
-                alt={match.away_team.name}
-                className="rounded-full  h-[60px]"
-              />
-            </div>
           </div>
-          <div className="flex items-center justify-center z-10 absolute inset-x-0 top-[50px]">
-          <button
-            className="  bg-blue-600 py-2 rounded-full px-8  text-white text-[10px] font-semibold"
-            onClick={() => handlePlaceBet(match.id)}
-          >
-            Play Now
-          </button>
-          </div>
-         
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
     </div>
   );
 };

@@ -8,7 +8,7 @@ import { BiWalletAlt } from 'react-icons/bi';
 
 export default function LoginButton() {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function LoginButton() {
           if (address) setWalletAddress(address);
         } catch (error) {
           console.error('Failed to fetch wallet address:', error);
-          setError('Failed to fetch wallet address.');
+          // setError('Failed to fetch wallet address.');
         }
       }
     };
@@ -32,7 +32,7 @@ export default function LoginButton() {
 
   const handleLogin = async () => {
     setIsLoading(true);
-    setError(null);
+    // setError(null);
 
     try {
       const web3Auth = Web3AuthService.getInstance();
@@ -45,7 +45,7 @@ export default function LoginButton() {
       setWalletAddress(walletAddress);
     } catch (error) {
       console.error('Login failed:', error);
-      setError('Login failed. Please try again.');
+      // setError('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -71,12 +71,12 @@ export default function LoginButton() {
         <button
           onClick={handleLogin}
           disabled={isLoading}
-          className="p-1 text-xs bg-blue-500 text-white rounded disabled:opacity-50"
+          className="px-2 py-1 text-xs bg-blue-500 text-white rounded disabled:opacity-50"
         >
           {isLoading ? 'Connecting...' : 'Connect Wallet'}
         </button>
       )}
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {/* {error && <p className="text-red-500 mt-2">{error}</p>} */}
     </div>
   );
 }
