@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FaMoneyBill } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import axiosInstance from "@/utils/axios";
+// import axiosInstance from "@/utils/axios";
 import { AuthService } from "@/services/auth";
+import { getGames } from "@/api/sports";
+import { useAppState } from "@/utils/appState";
+import UnAuthorised from "@/components/UnAuthorised";
 
 interface Team {
   id: number;
@@ -20,39 +23,32 @@ interface Match {
 }
 
 const MyContests = () => {
-  const [name, setName] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  // const [name, setName] = useState<string>("");
+  // const [password, setPassword] = useState<string>("");
   const [data, setData] = useState<Match[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const { user, setUser } = useAppState();
 
-  useEffect(() => {
-    // const storedName = localStorage.getItem("username");
-    // const storedPassword = localStorage.getItem("password");
-
-    // if (storedName) setName(storedName);
-    // if (storedPassword) setPassword(storedPassword);
-    const token = AuthService.getAccessToken();
-    if (token) {
-      axiosInstance
-        .get("/sports/games/", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-        })
-        .then((response) => {
-          console.log("API response:", response.data);
-          setData(response.data);
-        })
-        .catch((error) => {
-          setError("Failed to fetch data");
-          console.error("Fetch error:", error);
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setError("Missing credentials");
+  const fetchApiData = async () => {
+    try {
+      setError("");
+      setLoading(true);
+      const response = await getGames();
+      // setData(response);
+      // console.log(response);
+      setData(response);
+      setLoading(false);
+    } catch (error) {
+      setError("Failed to fetch data");
+      console.error("Fetch error:", error);
+    } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchApiData();
   }, []);
 
   // Function to format the date
@@ -68,66 +64,58 @@ const MyContests = () => {
     return date.toLocaleString("en-US", options).replace(",", " at");
   };
 
+    if (!user?.address) {
+      return <UnAuthorised />;
+    }
+
   return (
     <div className="bg-black min-h-screen text-white p-2 ">
-      <div className="bg-blue-600 p-2 rounded-xl text-center">
-        <p className="text-gray-300 text-xs" >Balance</p>
-        <h1 className="text-xl font-bold flex items-center justify-center gap-2">
-          <FaMoneyBill /> 4,450
-        </h1>
-        <p className="text-[#CEFF00] text-xs mt-1">+4.34%, 24 September 2024</p>
-
-        <div className=" flex justify-between items-center space-x-2">
-          {/* <span className="text-white font-semibold">🔥 Win streak:</span>
-          <div className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold text-[#CEFF00] bg-[#1F1DFF] border-[6px] border-[#CEFF00]">
-            4
-          </div> */}
-        </div>
-      </div>
-
-      <div className="space-y-4">
+      <div className="space-y-4 pt-2">
         {loading ? (
-            <div className="loader border-t-2 rounded-full border-yellow-500 bg-yellow-300 animate-spin
-            aspect-square w-8 flex justify-center items-center text-yellow-700">$</div>   
+          <div
+            className="loader mx-auto border-t-2 rounded-full border-yellow-500 bg-yellow-300 animate-spin
+            aspect-square w-8 flex justify-center items-center text-yellow-700"
+          >
+            $
+          </div>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : data && data.length > 0 ? (
           data.map((match) => (
             <div
-            key={match.id}
-            className="bg-gray-800 py-4 px-4 flex flex-col gap-2 items-center text-center rounded-[40px]"
-          >
-            <div className="flex justify-between items-center gap-2">
-              <img
-                src={match.home_team.logo_url}
-                alt={`${match.home_team.name} logo`}
-                className="max-w-8 h-8"
-              />
-              <p className="text-white font-bold text-sm flex-1 text-center">
-                {match.home_team.display_name}
-              </p>
-          
-              <div className="bg-[#CEFF00] text-black font-bold p-2 h-10 w-10 rounded-full mx-2 text-center">
-                vs
+              key={match.id}
+              className="bg-gray-800 py-4 px-4 flex flex-col gap-2 items-center text-center rounded-[40px]"
+            >
+              <div className="flex justify-between items-center gap-2">
+                <img
+                  src={match.home_team.logo_url}
+                  alt={`${match.home_team.name} logo`}
+                  className="max-w-8 h-8"
+                />
+                <p className="text-white font-bold text-sm flex-1 text-center">
+                  {match.home_team.display_name}
+                </p>
+
+                <div className="bg-[#CEFF00] text-black font-bold p-2 h-10 w-10 rounded-full mx-2 text-center">
+                  vs
+                </div>
+
+                <p className="text-white font-bold text-sm flex-1 text-center">
+                  {match.away_team.display_name}
+                </p>
+                <img
+                  src={match.away_team.logo_url}
+                  alt={`${match.away_team.name} logo`}
+                  className="max-w-8 h-8"
+                />
               </div>
-          
-              <p className="text-white font-bold text-sm flex-1 text-center">
-                {match.away_team.display_name}
-              </p>
-              <img
-                src={match.away_team.logo_url}
-                alt={`${match.away_team.name} logo`}
-                className="max-w-8 h-8"
-              />
-            </div>
-          
-            <div className="flex justify-center">
-              <div className="bg-blue-600 text-white text-xs w-[150px] py-2 rounded-xl text-center">
-                {formatDate(match.date)}
+
+              <div className="flex justify-center">
+                <div className="bg-blue-600 text-white text-xs w-[150px] py-2 rounded-xl text-center">
+                  {formatDate(match.date)}
+                </div>
               </div>
             </div>
-          </div>
-          
           ))
         ) : (
           <p className="text-center text-gray-400">No contests available</p>

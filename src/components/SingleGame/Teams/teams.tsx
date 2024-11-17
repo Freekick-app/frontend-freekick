@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import axiosInstance, { axiosInstanceWithoutAuth } from "@/utils/axios";
+// import axiosInstance, { axiosInstanceWithoutAuth } from "@/utils/axios";
+import { getGames, getTeams } from "@/api/sports";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -31,21 +32,7 @@ export default function Statistics() {
 
   const showGameDetails = async () => {
     try {
-      const response = await axiosInstanceWithoutAuth.get(
-        `/sports/games/${matchId}/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-      if (response.status !== 200) {
-        const errorData = response.data;
-        setError(`Error: ${errorData.message || "Failed to fetch game details"}`);
-        return;
-      }
-      const data = response.data;
+      const data = await getGames(matchId as string);
       setGameDetails(data);
       setError(null);
       setHomeTeamId(data?.home_team?.id);
@@ -61,17 +48,20 @@ export default function Statistics() {
   const FetchTeams = async (teamId: number) => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get(`/sports/teams/${teamId}/roster`, {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      });
-      if (response.status !== 200) {
-        setError("Error: Failed to fetch the stats");
-        return;
-      }
-      const data = response.data;
+      // const response = await axiosInstance.get(
+      //   `/sports/teams/${teamId}/roster`,
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       Accept: "application/json",
+      //     },
+      //   }
+      // );
+      // if (response.status !== 200) {
+      //   setError("Error: Failed to fetch the stats");
+      //   return;
+      // }
+      const data = await getTeams(teamId);
       setPlayers(data);
       setError(null);
     } catch (error) {
@@ -87,12 +77,14 @@ export default function Statistics() {
       <h2 className="font-bold">Rosters</h2>
       <div className="grid grid-cols-3 gap-2 p-2">
         {players.map((player) => (
-          <div key={player.id} className="text-center bg-gray-600 rounded-lg">
-            <img
-              src={player.headshot_url}
-              alt={player.full_name}
-              className="h-18 mx-auto"
-            />
+          <div key={player?.id} className="text-center bg-gray-600 rounded-lg">
+            <div className="h-28">
+              <img
+                src={player?.headshot_url}
+                alt={player?.full_name}
+                className="h-18 mx-auto"
+              />
+            </div>
             <p className="text-white mt-2">{player.full_name}</p>
           </div>
         ))}
@@ -105,7 +97,9 @@ export default function Statistics() {
       <div className="flex items-center bg-gray-700 px-2 text-white justify-between py-[8px] text-sm rounded-sm">
         <div
           className={`text-gray-200 hover:text-white cursor-pointer ${
-            activeTab === "HomeTeam" ? "text-white font-bold border-b-2 border-white" : ""
+            activeTab === "HomeTeam"
+              ? "text-white font-bold border-b-2 border-white"
+              : ""
           }`}
           onClick={() => setActiveTab("HomeTeam")}
         >
@@ -113,7 +107,9 @@ export default function Statistics() {
         </div>
         <div
           className={`text-gray-200 hover:text-white cursor-pointer ${
-            activeTab === "AwayTeam" ? "text-white font-bold border-b-2 border-white" : ""
+            activeTab === "AwayTeam"
+              ? "text-white font-bold border-b-2 border-white"
+              : ""
           }`}
           onClick={() => setActiveTab("AwayTeam")}
         >

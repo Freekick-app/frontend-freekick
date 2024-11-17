@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
-import { axiosInstanceWithoutAuth } from "@/utils/axios";
 import { useRouter } from "next/router";
+import { getGames } from "@/api/sports";
 // import { AuthService } from "@/services/auth";
-
 interface Team {
   id: number;
   name: string;
@@ -27,38 +27,33 @@ const FootballMatches = () => {
 
   const router = useRouter();
 
-
-
-
-
-
-
+  // fetch the api data
+  const fetchApiData = async () => {
+    try {
+      setError("");
+      const response = await getGames();
+      // setData(response);
+      // console.log(response);
+      const today = new Date();
+      const upcomingMatches = response?.filter((match: any) => {
+        if (
+          new Date(match?.date) > today &&
+          match?.home_team?.display_name !== "TBD"
+        ) {
+          return match;
+        }
+      });
+      setData(upcomingMatches);
+    } catch (error) {
+      setError("Failed to fetch data");
+      console.error("Fetch error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    axiosInstanceWithoutAuth
-      .get(`/sports/games/`, {
-        headers: {
-          // Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        const today = new Date();
-        const oneWeekFromToday = new Date();
-        oneWeekFromToday.setDate(today.getDate() + 7);
-
-        // Filter matches occurring within the next week
-        const filteredMatches = response.data.filter((match: Match) => {
-          const matchDate = new Date(match.date);
-          return matchDate >= today && matchDate <= oneWeekFromToday;
-        });
-
-        setData(filteredMatches);
-      })
-      .catch((error) => {
-        setError("Failed to fetch data");
-        console.error("Fetch error:", error);
-      })
-      .finally(() => setLoading(false));
+    fetchApiData();
   }, []);
 
   const handlePlaceBet = (matchId: number) => {
@@ -73,32 +68,41 @@ const FootballMatches = () => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = {
-      day: '2-digit',
-      month: '2-digit',
+      day: "2-digit",
+      month: "2-digit",
     };
-    return date.toLocaleDateString('en-GB', options); // Formats date as DD/MM
+    return date.toLocaleDateString("en-GB", options); // Formats date as DD/MM
   };
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = {
-      hour: '2-digit',
-      minute: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
       hour12: true, // Use 12-hour format
     };
-    return date.toLocaleTimeString('en-GB', options); // Formats time as hh:mm AM/PM
+    return date.toLocaleTimeString("en-GB", options); // Formats time as hh:mm AM/PM
   };
 
   return (
     <div>
-      {loading && <div className="items-center justify-center flex">
-        <div className="loader border-t-2 rounded-full border-yellow-500 bg-yellow-300 animate-spin
-              aspect-square w-8 flex justify-center items-center text-yellow-700">$</div>
-      </div>}
+      {loading && (
+        <div className="items-center justify-center flex">
+          <div
+            className="loader border-t-2 rounded-full border-yellow-500 bg-yellow-300 animate-spin
+              aspect-square w-8 flex justify-center items-center text-yellow-700"
+          >
+            $
+          </div>
+        </div>
+      )}
       {error && <p className="text-red-500">{error}</p>}
       <div className="flex flex-col gap-1">
         {data.map((match) => (
-          <div key={match.id} className="bg-gray-700 w-full rounded-2xl h-[70px] p-1 my-4 relative z-0">
+          <div
+            key={match.id}
+            className="bg-gray-700 w-full rounded-2xl h-[70px] p-1 my-4 relative z-0"
+          >
             <div className="flex justify-between items-center">
               <div className="flex items-center">
                 <img
@@ -135,7 +139,6 @@ const FootballMatches = () => {
                 Play Now
               </button>
             </div>
-
           </div>
         ))}
       </div>
