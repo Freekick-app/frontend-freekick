@@ -1,6 +1,5 @@
-import axios from 'axios';
-
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
+const API_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000/api";
 
 export interface AuthTokens {
   access: string;
@@ -9,68 +8,93 @@ export interface AuthTokens {
 
 export class AuthService {
   static async requestMessage(walletAddress: string): Promise<string> {
-    
     try {
-      const response = await axios.post(`${API_URL}/blockchain/auth/request-message/`, {
-        wallet_address: walletAddress,
-      });
-      return response.data.message;
+      const response = await fetch(
+        `${API_URL}/blockchain/auth/request-message/`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ wallet_address: walletAddress }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to request message");
+      }
+
+      const data = await response.json();
+      return data.message;
     } catch (error) {
-      console.error('Error requesting message:', error);
+      console.error("Error requesting message:", error);
       throw error;
     }
   }
 
-  static async verifySignature(walletAddress: string, signature: string): Promise<AuthTokens> {
+  static async verifySignature(
+    walletAddress: string,
+    signature: string
+  ): Promise<AuthTokens> {
     try {
-      const response = await axios.post(`${API_URL}/blockchain/auth/wallet-login/`, {
-        wallet_address: walletAddress,
-        signature: signature,
+      const response = await fetch(`${API_URL}/blockchain/auth/wallet-login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ wallet_address: walletAddress, signature }),
       });
-      if (response.status !== 200){
-        throw response?.data?.error
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to verify signature");
       }
-      console.log(response.data);
 
-      return response?.data?.tokens;
-
+      const data = await response.json();
+      return data.tokens;
     } catch (error) {
-      console.error('Error verifying signature:', error);
+      console.error("Error verifying signature:", error);
       throw error;
     }
   }
 
   static async refreshToken(refreshToken: string): Promise<AuthTokens> {
     try {
-      const response = await axios.post(`${API_URL}/blockchain/auth/refresh/`, {
-        refresh: refreshToken,
+      const response = await fetch(`${API_URL}/blockchain/auth/refresh/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh: refreshToken }),
       });
-      console.log(response.data)
-      
-      return response.data;
+
+      if (!response.ok) {
+        const status_code = response.status;
+        if (status_code === 401) {
+          this.clearTokens();
+        }
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to refresh token");
+      }
+
+      const data = await response.json();
+      return data;
     } catch (error) {
-      console.error('Error refreshing token:', error);
+      console.error("Error refreshing token:", error);
       throw error;
     }
   }
 
   static saveTokens(tokens: AuthTokens): void {
-    
-    console.log(tokens);
-    localStorage.setItem('access_token', tokens.access);
-    localStorage.setItem('refresh_token', tokens.refresh);
+    localStorage.setItem("access_token", tokens.access);
+    localStorage.setItem("refresh_token", tokens.refresh);
   }
 
   static clearTokens(): void {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
   }
 
   static getAccessToken(): string | null {
-    return localStorage.getItem('access_token');
+    return localStorage.getItem("access_token");
   }
 
   static getRefreshToken(): string | null {
-    return localStorage.getItem('refresh_token');
+    return localStorage.getItem("refresh_token");
   }
 }

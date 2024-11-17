@@ -12,7 +12,7 @@ import { Router, useRouter } from "next/router";
 import VollyballMatches from "./Sports/vollyball-matches";
 import SocerMatches from "./Sports/socer-matches";
 import BasketballMatches from "./Sports/basketball-matches";
-
+import { GiSoccerBall } from "react-icons/gi";
 
 
 export default function BetPage() {
@@ -22,27 +22,29 @@ export default function BetPage() {
   const router = useRouter();
 
   const sports = [
-    { name: "Football", icon: <FaFootballBall />,
-      logo: "./nflLogo2.png", 
-      league: "NFL" 
-     },
-     { 
-      name: "Volleyball", 
-      icon: <MdOutlineSportsVolleyball />, 
-      logo: "./fivb2.png", 
-      league: "FIVB" 
+    {
+      name: "Football",
+      icon: <IoIosFootball />,
+      logo: "./nflLogo2.png",
+      league: "NFL",
     },
-    { 
-      name: "Soccer", 
-      icon: <IoIosFootball />, 
-      logo: "./fifa.png", 
-      league: "FIFA" 
+    {
+      name: "Volleyball",
+      icon: <MdOutlineSportsVolleyball />,
+      logo: "./fivb2.png",
+      league: "FIVB",
     },
-    { 
-      name: "Basketball", 
-      icon: <FaBasketballBall />, 
-      logo: "./nba2.png", 
-      league: "NBA" 
+    {
+      name: "Soccer",
+      icon: <GiSoccerBall />,
+      logo: "./fifa.png",
+      league: "FIFA",
+    },
+    {
+      name: "Basketball",
+      icon: <FaBasketballBall />,
+      logo: "./nba2.png",
+      league: "NBA",
     },
   ];
 

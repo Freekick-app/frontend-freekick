@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useRouter } from "next/router";
-import axios from "axios";
+// import axios from "axios";
 import { useState, useEffect } from "react";
 import Questions from "@/components/Questions/questions";
-import axiosInstance, { axiosInstanceWithoutAuth } from "@/utils/axios";
+// import axiosInstance, { axiosInstanceWithoutAuth } from "@/utils/axios";
 import { AuthService } from "@/services/auth";
 import { TbCircleNumber1Filled } from "react-icons/tb";
 import ContestOptions from "@/components/SingleGame/contest-options";
@@ -12,119 +12,86 @@ import UserContests from "@/components/SingleGame/user-contests";
 import Statistics from "@/components/SingleGame/Stats/statistics";
 import Teams from "@/components/SingleGame/Teams/teams";
 import toast from "react-hot-toast";
-
-
-
+import { getQuestions, placeBet, submitAnswer } from "@/api/pools";
+import { getGames } from "@/api/sports";
+import AeonPayService from "@/lib/aeon";
+import { useAppState } from "@/utils/appState";
+import UnAuthorised from "@/components/UnAuthorised";
+// import { getProfile } from "@/api/blockchain";
 const PlaceBet = () => {
   const router = useRouter();
   const { matchId, initPoolId } = router.query;
   const [poolId, setPoolId] = useState<string | undefined>();
-  const [betSize] = useState<number>(10);
-  const [error, setError] = useState<string | null>(null);
-  const [authCredentials, setAuthCredentials] = useState<{ token: string } | null>(null);
   const [questions, setQuestions] = useState<any[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedOptions, setSelectedOptions] = useState<{ [key: number]: { id: string; text: string } }>({});
-  const [selectedOptions2, setSelectedOptions2] = useState<{ [key: number]: { id: string; text: string }[] }>({});
+  const [selectedOptions2, setSelectedOptions2] = useState<{
+    [key: number]: { id: string; text: string }[];
+  }>({});
   const [betState, setBetState] = useState("initial");
   const [gameDetails, setGameDetails] = useState<any>();
-  const [timeLeft, setTimeLeft] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("contests");
-  const [myPools, setMyPools] = useState<any>();
+  const { user, refreshProfile, isInitialized } = useAppState();
 
   const betSizes = [100, 50, 20, 10, 5, 1];
 
   useEffect(() => {
     if (initPoolId) {
-      const getQuestions = async () => {
+      const getQuestionss = async () => {
         try {
-          const response = await axiosInstance.get(`/pools/${initPoolId}/questions/`);
-          const data = await response.data;
+          const data = await getQuestions(initPoolId);
           setQuestions(data?.questions);
           // setCurrentQuestionIndex on which has user_answer as null check from 0 to end
-          const currentQuestionIndex = data?.questions.findIndex((question: any) => !question.user_answer);
-          setCurrentQuestionIndex(currentQuestionIndex === -1 ? 0 : currentQuestionIndex);
+          const currentQuestionIndex = data?.questions.findIndex(
+            (question: any) => !question.user_answer
+          );
+          setCurrentQuestionIndex(
+            currentQuestionIndex === -1 ? 0 : currentQuestionIndex
+          );
           setPoolId(initPoolId as string);
           setBetState("bet_started");
         } catch (error) {
           console.error("Error fetching questions:", error);
-          setError("Failed to fetch questions. Please try again.");
+          toast.error("Failed to fetch questions. Please try again.");
         }
       };
-      getQuestions();
+      getQuestionss();
     }
   }, [initPoolId]);
 
-  useEffect(() => {
-    const token = AuthService.getAccessToken();
-    // const username = localStorage.getItem("username");
-    // const password = localStorage.getItem("password");
-    if (token) {
-      setAuthCredentials({ token });
-    } else {
-      setError("Please login to place a bet.");
-    }
-  }, []);
-
-  useEffect(() => {
-    if (poolId) {
-      console.log("poolId:", poolId);
-    }
-  }, [poolId]);
+  // useEffect(() => {
+  //   if (poolId) {
+  //     // console.log("poolId:", poolId);
+  //   }
+  // }, [poolId]);
 
   const handlePlaceBet = async (betSize: number) => {
-        if (!authCredentials) {
-      setError("Please login to place a bet.");
-      toast.error("Please login to place a bet.");
-      return;
-    }
+    const token = AuthService.getAccessToken();
+    if (!token) return;
     try {
-      const response = await axiosInstance.post(
-        `/pools/place_bet/`,
-        {
-          game_id: matchId,
-          bet_size: betSize,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${authCredentials.token}`,
-          },
-        }
-      );
-
-      const questionsData = await response.data;
+      const questionsData = await placeBet(matchId, betSize);
 
       // console.log(questionsData, "response")
-      questionsData?.questions.forEach((question: any) => {
-        console.log(`Question ID: ${question.id}, Question Type: ${question.question_type}`);
-      });
+      // questionsData?.questions.forEach((question: any) => {
+      //   console.log(
+      //     `Question ID: ${question.id}, Question Type: ${question.question_type}`
+      //   );
+      // });
       // console.log(questionsData);
-      setPoolId(questionsData.pool_id);
+      setPoolId(questionsData?.pool_id);
       setQuestions(questionsData?.questions);
-    
+
       setBetState("bet_started");
-      setError(null);
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        const backendMessage = error.response.data?.error || "Failed to place bet. Please try again.";
-        setError(backendMessage);
-        // alert(backendMessage);
-        toast.error(backendMessage);
-    
-      } else {
-        console.error("Error placing bet:", error);
-        setError("An unexpected error occurred. Please try again.");
-      }
+      await refreshProfile();
+    } catch (error: any) {
+      toast.error(error?.message ?? "Failed to place bet");
     }
   };
 
   const handleNext = () => {
- 
     setCurrentQuestionIndex((prevIndex) => {
-      const nextIndex = prevIndex <= questions.length - 1 ? prevIndex + 1 : prevIndex;
+      const nextIndex =
+        prevIndex <= questions.length - 1 ? prevIndex + 1 : prevIndex;
       if (nextIndex === questions.length) {
         setBetState("submit");
       }
@@ -140,24 +107,20 @@ const PlaceBet = () => {
     );
   };
 
-  const handleOptionSelect = (questionId: number, option: { id: string; text: string }) => {
-    setSelectedOptions((prevSelectedOptions) => ({
-      ...prevSelectedOptions,
-      [questionId]: option,
-    }));
-  };
-
-  function handleOptionsSelect(questionId: number, options: { id: string; text: string }[]) {
+  function handleOptionsSelect(
+    questionId: number,
+    options: { id: string; text: string }[]
+  ) {
     setSelectedOptions2((prev) => ({
       ...prev,
-      [questionId]: options
-    }))
+      [questionId]: options,
+    }));
   }
 
   const handleBackToHome = async () => {
-    console.log("Returing to quiz pages")
-   
-    router.push("/")
+    // console.log("Returing to quiz pages");
+
+    router.push("/");
   };
 
   const handleSubmitAnswer = async (
@@ -165,7 +128,7 @@ const PlaceBet = () => {
     selected_options: { id: string; text: string }[],
     question_type: string = "single_select"
   ) => {
-    setLoading(true)
+    setLoading(true);
     const orderedOptions = selected_options.map((option, index) => ({
       id: option.id,
       text: option.text,
@@ -178,81 +141,51 @@ const PlaceBet = () => {
       selected_options: orderedOptions,
     };
 
-    console.log(payload);
-
     try {
-      if (!authCredentials) {
-        setError("Missing authentication credentials");
-        setLoading(false)
+      if (!poolId) {
+        toast.error("Missing pool id");
+        setLoading(false);
         return;
       }
 
-      const response = await axiosInstance.post(
-        `/pools/${poolId}/submit_answer/`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          // body: JSON.stringify(payload),
-        }
-      );
-
-      const data = await response.data
-
-      if (data.status === "success") {
+      const data = await submitAnswer(poolId, payload);
+      // console.log(data);
+      if (data?.status === "success") {
         console.log("Answer submitted");
         handleNext();
-        setError(null);
       } else {
-        setError(data.error);
+        console.log("Error submitting answer");
       }
-    } catch (err) {
-      console.error(err);
-      setError("Failed to submit answer. Please try again.");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(
+        error?.message ?? "Failed to submit answer. Please try again."
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
+
+  // useEffect(() => {
+  //   const aa = AeonPayService.generateSignature({ amount: "1000" }, "jhsdjsdjh");
+  //   console.log(aa, 'sedhs');
+  // },[])
 
   const showGameDetails = async () => {
     try {
-      // if (!authCredentials) {
-      //   setError("Missing authentication credentials");
-      //   return;
-      // }
-      const response = await axiosInstanceWithoutAuth.get(
-        `/sports/games/${matchId}/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-
-          },
-        }
-      );
-      if (response.status !== 200) {
-        const errorData = response.data
-        setError(`Error: ${errorData.message || "Failed to fetch game details"}`);
+      if (!matchId) {
         return;
       }
-      const data = await response.data;
+
+      const data = await getGames(matchId as string);
       setGameDetails(data);
-      console.log(data);
-      setError(null);
+      // console.log(data);
       const homeTeamId = data.home_team.id;
       const awayTeamId = data.away_team.id;
-
-
-
     } catch (error) {
-      setError("An error occurred while fetching game details");
       console.error(error);
     }
   };
-
-
 
   useEffect(() => {
     if (matchId) {
@@ -262,35 +195,6 @@ const PlaceBet = () => {
     }
   }, [matchId]);
 
-
-
-  // useEffect(() => {
-  //   if (gameDetails?.date) {
-  //     const matchDate = new Date(gameDetails.date);
-
-  //     const updateTimer = () => {
-  //       const now = new Date();
-  //       const diff = matchDate.getTime() - now.getTime();
-
-  //       if (diff <= 0) {
-  //         setTimeLeft("Match has started");
-  //       } else {
-  //         const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  //         const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  //         const seconds = Math.floor((diff / 1000) % 60);
-  //         setTimeLeft(`${hours}h ${minutes}m ${seconds}s left`);
-  //       }
-  //     };
-
-  //     updateTimer();
-  //     const timer = setInterval(updateTimer, 1000);
-
-  //     return () => clearInterval(timer);
-  //   }
-  // }, [gameDetails?.date]);
-
-
-
   const getLastWord = (str: string) => {
     const words = str.split(" ");
     return words[words.length - 1];
@@ -299,46 +203,58 @@ const PlaceBet = () => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = {
-      day: '2-digit',
-      month: '2-digit',
+      day: "2-digit",
+      month: "2-digit",
     };
-    return date.toLocaleDateString('en-GB', options); // Formats date as DD/MM
+    return date.toLocaleDateString("en-GB", options); // Formats date as DD/MM
   };
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = {
-      hour: '2-digit',
-      minute: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
       hour12: true, // Use 12-hour format
     };
-    return date.toLocaleTimeString('en-GB', options); // Formats time as hh:mm AM/PM
+    return date.toLocaleTimeString("en-GB", options); // Formats time as hh:mm AM/PM
   };
-
 
   const renderOptions = () => {
     switch (activeTab) {
       case "contests":
-        return <div className="flex flex-col">
-        {betSizes.map((size, index) => (
-            <ContestOptions 
-              key={index} 
-              handlePlaceBet={handlePlaceBet} 
-              betSize={size} // Pass each bet size to ContestOptions
-            />
-          ))}    
-        </div> 
+        return (
+          <div className="flex flex-col">
+            {betSizes.map((size, index) => (
+              <ContestOptions
+                key={index}
+                handlePlaceBet={handlePlaceBet}
+                betSize={size} // Pass each bet size to ContestOptions
+              />
+            ))}
+          </div>
+        );
       case "myContests":
-        return <UserContests/>
+        return <UserContests />;
       case "teams":
-        return <div><Teams/></div>;
+        return (
+          <div>
+            <Teams />
+          </div>
+        );
       case "statistics":
-        return <div><Statistics/></div>;
+        return (
+          <div>
+            <Statistics />
+          </div>
+        );
       default:
         return null;
     }
-  }
+  };
 
+  if (!user?.address && isInitialized) {
+    return <UnAuthorised />;
+  }
 
   return (
     <div className="bg-black text-white flex items-center justify-center">
@@ -348,7 +264,9 @@ const PlaceBet = () => {
           questions={questions}
           currentQuestionIndex={currentQuestionIndex}
           selectedOptions={selectedOptions2}
-          handleNext={(questionId, options, question_type) => handleSubmitAnswer(questionId, options, question_type)}
+          handleNext={(questionId, options, question_type) =>
+            handleSubmitAnswer(questionId, options, question_type)
+          }
           handlePrevious={handlePrevious}
           handleOptionSelect={handleOptionsSelect}
           loading={loading}
@@ -389,56 +307,67 @@ const PlaceBet = () => {
                       <div>{formatTime(gameDetails.date)}</div>
                     </div>
                   </div>
-                  <div className="flex gap-1 items-center"><div className="text-end">
-                    <p className="text-white font-semibold text-sm ">
-                      {getLastWord(gameDetails.away_team.display_name)}
-                    </p>
-                    <h1 className="text-[8px]">4-5, 2nd AFC South</h1>
-                  </div>
+                  <div className="flex gap-1 items-center">
+                    <div className="text-end">
+                      <p className="text-white font-semibold text-sm ">
+                        {getLastWord(gameDetails.away_team.display_name)}
+                      </p>
+                      <h1 className="text-[8px]">4-5, 2nd AFC South</h1>
+                    </div>
                     <img
                       src={gameDetails?.away_team?.logo_url}
                       alt="Away Team logo"
                       className=" h-12"
                     />
-                  </div></div>
+                  </div>
+                </div>
               </div>
               <div className="flex items-center px-1 bg-gray-900 text-white justify-between py-2 text-xs rounded-sm">
                 <div
-                  className={`text-gray-300 hover:text-white cursor-pointer ${activeTab === "contests" ? "text-white font-bold border-b-2 border-white" : ""
-                    }`}
+                  className={`text-gray-300 hover:text-white cursor-pointer ${
+                    activeTab === "contests"
+                      ? "text-white font-bold border-b-2 border-white"
+                      : ""
+                  }`}
                   onClick={() => setActiveTab("contests")}
                 >
                   Contests
                 </div>
                 <div
-                  className={`text-gray-300 hover:text-white cursor-pointer ${activeTab === "myContests" ? "text-white font-bold border-b-2 border-white" : ""
-                    }`}
+                  className={`text-gray-300 hover:text-white cursor-pointer ${
+                    activeTab === "myContests"
+                      ? "text-white font-bold border-b-2 border-white"
+                      : ""
+                  }`}
                   onClick={() => setActiveTab("myContests")}
                 >
                   My Contests
                 </div>
                 <div
-                  className={`text-gray-300 hover:text-white cursor-pointer ${activeTab === "teams" ? "text-white font-bold border-b-2 border-white" : ""
-                    }`}
+                  className={`text-gray-300 hover:text-white cursor-pointer ${
+                    activeTab === "teams"
+                      ? "text-white font-bold border-b-2 border-white"
+                      : ""
+                  }`}
                   onClick={() => setActiveTab("teams")}
                 >
                   Teams
                 </div>
                 <div
-                  className={`text-gray-300 hover:text-white cursor-pointer ${activeTab === "statistics" ? "text-white font-bold border-b-2 border-white" : ""
-                    }`}
+                  className={`text-gray-300 hover:text-white cursor-pointer ${
+                    activeTab === "statistics"
+                      ? "text-white font-bold border-b-2 border-white"
+                      : ""
+                  }`}
                   onClick={() => setActiveTab("statistics")}
                 >
                   Statistics
                 </div>
               </div>
             </div>
-
-
           ) : (
             <p>Loading game details...</p>
           )}
-
 
           {renderOptions()}
         </div>

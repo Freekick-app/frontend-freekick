@@ -1,6 +1,5 @@
-import axios from 'axios';
-
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
+const API_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000/api";
 
 export interface TonAuthTokens {
   access: string;
@@ -17,28 +16,43 @@ export class TonAuthService {
   // Get the TON proof payload from the server
   static async getTonPayload(): Promise<{ payload: string }> {
     try {
-      const response = await axios.get(`${API_URL}/blockchain/auth/ton-payload/`);
-      return response.data;
+      const response = await fetch(`${API_URL}/blockchain/auth/ton-payload/`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch TON payload");
+      }
+
+      return await response.json();
     } catch (error) {
-      console.error('Error getting TON payload:', error);
+      console.error("Error getting TON payload:", error);
       throw error;
     }
   }
 
   // Verify TON proof and get authentication tokens
-  static async verifyTonProof(proof: string, wallet: TonWalletAccount): Promise<TonAuthTokens> {
+  static async verifyTonProof(
+    proof: string,
+    wallet: TonWalletAccount
+  ): Promise<TonAuthTokens> {
     try {
-      const response = await axios.post(`${API_URL}/blockchain/auth/ton-login/`, {
-        proof,
-        wallet
+      const response = await fetch(`${API_URL}/blockchain/auth/ton-login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ proof, wallet }),
       });
 
-      if (response.status !== 200) {
-        throw response?.data?.error;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to verify TON proof");
       }
-      return response.data;
+
+      return await response.json();
     } catch (error) {
-      console.error('Error verifying TON proof:', error);
+      console.error("Error verifying TON proof:", error);
       throw error;
     }
   }
@@ -46,33 +60,45 @@ export class TonAuthService {
   // Refresh authentication tokens
   static async refreshToken(refreshToken: string): Promise<TonAuthTokens> {
     try {
-      const response = await axios.post(`${API_URL}/blockchain/auth/refresh/`, {
-        refresh: refreshToken,
+      const response = await fetch(`${API_URL}/blockchain/auth/refresh/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh: refreshToken }),
       });
-      return response.data;
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        const status_code = response.status;
+        if (status_code === 401) {
+          this.clearTokens();
+        }
+        throw new Error(errorData.error || "Failed to refresh token");
+      }
+
+      return await response.json();
     } catch (error) {
-      console.error('Error refreshing token:', error);
+      console.error("Error refreshing token:", error);
       throw error;
     }
   }
 
   // Token management methods
   static saveTokens(tokens: TonAuthTokens): void {
-    localStorage.setItem('access_token', tokens.access);
-    localStorage.setItem('refresh_token', tokens.refresh);
+    localStorage.setItem("access_token", tokens.access);
+    localStorage.setItem("refresh_token", tokens.refresh);
   }
 
   static clearTokens(): void {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
   }
 
   static getAccessToken(): string | null {
-    return localStorage.getItem('access_token');
+    return localStorage.getItem("access_token");
   }
 
   static getRefreshToken(): string | null {
-    return localStorage.getItem('refresh_token');
+    return localStorage.getItem("refresh_token");
   }
 
   static isAuthenticated(): boolean {
