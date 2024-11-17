@@ -20,6 +20,8 @@ export default function App({ Component, pageProps }: AppProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User>({} as User);
   const [tgUserName, setTgUserName] = useState<string>("");
+  const [tonWalletAddress, setTonWalletAddress] = useState<string>("");
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const ignoreLayoutPaths = [""];
 
@@ -30,8 +32,17 @@ export default function App({ Component, pageProps }: AppProps) {
     } catch (error) {
       console.error("Error initializing authentication:", error);
       setIsAuthenticated(false);
+    } finally {
+      setIsInitialized(true);
     }
   };
+
+  useEffect(() => {
+    if (tonWalletAddress) {
+      setUser((prevUser) => ({ ...prevUser, address: tonWalletAddress }));
+    }
+  }, [tonWalletAddress]);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -55,7 +66,11 @@ export default function App({ Component, pageProps }: AppProps) {
     setUser,
     setTgUserName,
     tgUserName,
-    refreshProfile:initializeAuth
+    refreshProfile: initializeAuth,
+    setTonWalletAddress,
+    tonWalletAddress,
+    isInitialized,
+    setIsInitialized
   };
 
   useEffect(() => {

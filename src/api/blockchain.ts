@@ -32,8 +32,8 @@ export async function deposit(amount: string, modal: string): Promise<any> {
         method: "POST",
         headers: updateHeader(),
         body: JSON.stringify({
-          amount:amount,
-          modal:modal,
+          amount: amount,
+          modal: modal,
         }),
       }
     );
@@ -98,6 +98,53 @@ export async function requestWithdrawal(
     return data;
   } catch (error) {
     console.error("Error request withdrawal", error);
+    throw error;
+  }
+}
+
+export async function getTonPayload() {
+  try {
+    const response = await fetchWithRefresh(
+      `${backend_url}/blockchain/auth/ton-payload/`,
+      {
+        method: "GET",
+        headers: updateHeader(),
+      }
+    );
+    if (!response.ok) {
+      const erData = await response.json();
+      throw new Error(erData.error);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error get ton payload", error);
+    throw error;
+  }
+}
+
+export async function tonLogin(proof: any, wallet: any) {
+  try {
+    const response = await fetchWithRefresh(
+      `${backend_url}/blockchain/auth/ton-login/`,
+      {
+        method: "POST",
+        headers: updateHeader(),
+        body: JSON.stringify({
+          proof,
+          wallet,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error ton login", error);
     throw error;
   }
 }

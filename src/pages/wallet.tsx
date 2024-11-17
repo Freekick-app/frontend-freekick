@@ -22,42 +22,41 @@ import { useAppState } from "@/utils/appState";
 import UnAuthorised from "@/components/UnAuthorised";
 
 const MyWallet = () => {
-  const { user, refreshProfile, tgUserName } = useAppState();
-  const userFriendlyAddress = useTonAddress();
-  const [wallet_address, setWalletAddress] = useState<string | null>(null);
+  const { user, refreshProfile, tgUserName, tonWalletAddress, isInitialized } = useAppState();
+  // const userFriendlyAddress = useTonAddress();
+  // const [wallet_address, setWalletAddress] = useState<string | null>(null);
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [processing, setProcessing] = useState<string | null>(null);
-
 
   // useEffect(() => {
   //   fetchApiData();
   // }, []);
 
-  useEffect(() => {
-    if (userFriendlyAddress || tgUserName) {
-      setWalletAddress(userFriendlyAddress ?? tgUserName);
-      return;
-    }
-    setWalletAddress(null);
-  }, [userFriendlyAddress, tgUserName]);
+  // useEffect(() => {
+  //   if (userFriendlyAddress || tgUserName) {
+  //     setWalletAddress(userFriendlyAddress ?? tgUserName);
+  //     return;
+  //   }
+  //   setWalletAddress(null);
+  // }, [userFriendlyAddress, tgUserName]);
 
-  useEffect(() => {
-    const initializeWallet = async () => {
-      const token = AuthService.getAccessToken();
-      if (token && !tgUserName) {
-        try {
-          const web3Auth = Web3AuthService.getInstance();
-          const address = await web3Auth.getCurrentWalletAddress();
-          if (address) setWalletAddress(address);
-        } catch (error) {
-          console.error("Failed to fetch wallet address:", error);
-          // setError('Failed to fetch wallet address.');
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const initializeWallet = async () => {
+  //     const token = AuthService.getAccessToken();
+  //     if (token && !tgUserName) {
+  //       try {
+  //         const web3Auth = Web3AuthService.getInstance();
+  //         const address = await web3Auth.getCurrentWalletAddress();
+  //         // if (address) setWalletAddress(address);
+  //       } catch (error) {
+  //         console.error("Failed to fetch wallet address:", error);
+  //         // setError('Failed to fetch wallet address.');
+  //       }
+  //     }
+  //   };
 
-    initializeWallet();
-  }, [tgUserName]);
+  //   initializeWallet();
+  // }, [tgUserName]);
 
   async function handleDeposit(amount: string) {
     try {
@@ -135,7 +134,7 @@ const MyWallet = () => {
     }
   };
 
-  if (!user?.address) {
+  if (!user?.address && isInitialized) {
     return <UnAuthorised />;
   }
 
@@ -146,10 +145,10 @@ const MyWallet = () => {
           <p className="text-xl font-bold text-gray-300">Wallet</p>
           <p
             className="text-xs font-bold text-white cursor-pointer"
-            onClick={() => copyAddress(user?.address ?? wallet_address)}
+            onClick={() => copyAddress(tonWalletAddress || user?.address)}
           >
-            {user?.address || wallet_address
-              ? shortAddress(user?.address ?? wallet_address)
+            {user?.address
+              ? shortAddress(tonWalletAddress || user?.address)
               : ""}
           </p>
         </div>

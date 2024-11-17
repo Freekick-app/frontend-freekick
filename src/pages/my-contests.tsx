@@ -28,7 +28,7 @@ const MyContests = () => {
   const [data, setData] = useState<Match[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const { user, setUser } = useAppState();
+  const { user, setUser, isInitialized } = useAppState();
 
   const fetchApiData = async () => {
     try {
@@ -64,7 +64,7 @@ const MyContests = () => {
     return date.toLocaleString("en-US", options).replace(",", " at");
   };
 
-    if (!user?.address) {
+    if (!user?.address && isInitialized) {
       return <UnAuthorised />;
     }
 

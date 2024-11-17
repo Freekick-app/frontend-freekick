@@ -31,7 +31,7 @@ const PlaceBet = () => {
   const [gameDetails, setGameDetails] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("contests");
-  const { user, refreshProfile } = useAppState();
+  const { user, refreshProfile, isInitialized } = useAppState();
 
   const betSizes = [100, 50, 20, 10, 5, 1];
 
@@ -252,7 +252,7 @@ const PlaceBet = () => {
     }
   };
 
-  if (!user?.address) {
+  if (!user?.address && isInitialized) {
     return <UnAuthorised />;
   }
 
