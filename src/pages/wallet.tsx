@@ -22,41 +22,19 @@ import { useAppState } from "@/utils/appState";
 import UnAuthorised from "@/components/UnAuthorised";
 
 const MyWallet = () => {
-  const { user, refreshProfile, tgUserName, tonWalletAddress, isInitialized } = useAppState();
+  const {
+    user,
+    refreshProfile,
+    tgUserName,
+    tgUser,
+    tonWalletAddress,
+    isInitialized,
+  } = useAppState();
   // const userFriendlyAddress = useTonAddress();
   // const [wallet_address, setWalletAddress] = useState<string | null>(null);
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [processing, setProcessing] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   fetchApiData();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (userFriendlyAddress || tgUserName) {
-  //     setWalletAddress(userFriendlyAddress ?? tgUserName);
-  //     return;
-  //   }
-  //   setWalletAddress(null);
-  // }, [userFriendlyAddress, tgUserName]);
-
-  // useEffect(() => {
-  //   const initializeWallet = async () => {
-  //     const token = AuthService.getAccessToken();
-  //     if (token && !tgUserName) {
-  //       try {
-  //         const web3Auth = Web3AuthService.getInstance();
-  //         const address = await web3Auth.getCurrentWalletAddress();
-  //         // if (address) setWalletAddress(address);
-  //       } catch (error) {
-  //         console.error("Failed to fetch wallet address:", error);
-  //         // setError('Failed to fetch wallet address.');
-  //       }
-  //     }
-  //   };
-
-  //   initializeWallet();
-  // }, [tgUserName]);
 
   async function handleDeposit(amount: string) {
     try {
@@ -67,7 +45,7 @@ const MyWallet = () => {
         return;
       }
 
-      const modal = tgUserName ? "tg" : "order";
+      const modal = tgUserName || tgUser?.id ? "tg" : "order";
       const data = await deposit(amount, modal);
       // console.log(data);
       const payload = data?.payload;

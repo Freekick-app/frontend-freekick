@@ -13,6 +13,7 @@ import AppStateContext, {
   useAppState,
   IAppContextProps,
   User,
+  TgUser,
 } from "@/utils/appState";
 import { getProfile } from "@/api/blockchain";
 export default function App({ Component, pageProps }: AppProps) {
@@ -22,6 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [tgUserName, setTgUserName] = useState<string>("");
   const [tonWalletAddress, setTonWalletAddress] = useState<string>("");
   const [isInitialized, setIsInitialized] = useState(false);
+  const [tgUser, setTgUser] = useState<TgUser>({} as TgUser);
 
   const ignoreLayoutPaths = [""];
 
@@ -51,6 +53,7 @@ export default function App({ Component, pageProps }: AppProps) {
         tg.ready();
         const user = tg.initDataUnsafe?.user;
         if (user) {
+          setTgUser(user);
           const displayName = user.username
             ? user.username
             : `${user.first_name} ${user.last_name || ""}`;
@@ -70,7 +73,9 @@ export default function App({ Component, pageProps }: AppProps) {
     setTonWalletAddress,
     tonWalletAddress,
     isInitialized,
-    setIsInitialized
+    setIsInitialized,
+    tgUser,
+    setTgUser,
   };
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import ConnectWallet from "./LoginWithTonButton";
 import LoginButton from "./LoginButton";
 
 export default function UnAuthorised() {
-  const { tgUserName } = useAppState();
+  const { tgUserName, tgUser } = useAppState();
   return (
     <div className="w-full pt-20 flex flex-col justify-center items-center ">
       <div className="p-10 rounded-md shadow-md">
@@ -12,7 +12,7 @@ export default function UnAuthorised() {
       </div>
       <div className="flex flex-col items-center gap-4">
         <div className="flex ">
-          {tgUserName ? <ConnectWallet /> : <LoginButton />}
+          {tgUserName || tgUser?.id ? <ConnectWallet /> : <LoginButton />}
         </div>
       </div>
     </div>

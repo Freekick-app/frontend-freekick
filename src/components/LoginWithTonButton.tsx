@@ -127,13 +127,24 @@ const ConnectWallet: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleConnect() {
-    await tonConnectUI.connectWallet();
+    try {
+      setIsLoading(true);
+      await tonConnectUI.openModal();
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function handleDisconnect() {
-    await tonConnectUI.disconnect();
-    setUser({} as any);
-    AuthService.clearTokens();
+    try {
+      await tonConnectUI.disconnect();
+      setUser({} as any);
+      AuthService.clearTokens();
+    } catch (error) {
+      console.error("Error disconnecting wallet:", error);
+    }
   }
 
   return (
