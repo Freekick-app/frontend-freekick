@@ -24,7 +24,7 @@ export default function BetPage() {
   const sports = [
     {
       name: "Football",
-      icon: <IoIosFootball />,
+      icon: <FaFootballBall />,
       logo: "./nflLogo2.png",
       league: "NFL",
     },
