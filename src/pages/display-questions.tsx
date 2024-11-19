@@ -44,7 +44,7 @@ export default function DisplayQuestions() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const poolId = 20;
+  const poolId = 34;
 
   useEffect(() => {
     const token = AuthService.getAccessToken();

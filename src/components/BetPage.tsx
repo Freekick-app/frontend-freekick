@@ -13,6 +13,7 @@ import VollyballMatches from "./Sports/vollyball-matches";
 import SocerMatches from "./Sports/socer-matches";
 import BasketballMatches from "./Sports/basketball-matches";
 import { GiSoccerBall } from "react-icons/gi";
+import { FaBasketball, FaFootball, FaVolleyball } from "react-icons/fa6";
 
 
 export default function BetPage() {
@@ -24,25 +25,29 @@ export default function BetPage() {
   const sports = [
     {
       name: "Football",
-      icon: <FaFootballBall />,
+      icon: <FaFootball />,
+      color: "text-[#815337]", 
       logo: "./nflLogo2.png",
       league: "NFL",
     },
     {
       name: "Volleyball",
-      icon: <MdOutlineSportsVolleyball />,
+      icon: <FaVolleyball />,
+      color: "text-[#dc5d49]", 
       logo: "./fivb2.png",
       league: "FIVB",
     },
     {
       name: "Soccer",
       icon: <GiSoccerBall />,
+      color: "text-black", 
       logo: "./fifa.png",
       league: "FIFA",
     },
     {
       name: "Basketball",
-      icon: <FaBasketballBall />,
+      icon: <FaBasketball />,
+      color: "text-[#ee6730]",
       logo: "./nba2.png",
       league: "NBA",
     },
@@ -83,7 +88,7 @@ export default function BetPage() {
                   className={`p-2 rounded-full ${selectedSport === sport.name ? "bg-[#CEFF00]" : "bg-gray-800"}`}
                 >
                   <span
-                    className={`text-[18px] items-center justify-between  flex ${selectedSport === sport.name ? "text-black" : "text-gray-400"}`}
+                    className={`text-[18px] items-center justify-between  flex ${selectedSport === sport.name ? sport.color : "text-gray-400"}`}
                   >
                     {sport.icon}
                   </span>

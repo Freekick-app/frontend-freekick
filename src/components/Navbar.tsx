@@ -2,10 +2,11 @@ import { FiHome } from "react-icons/fi";
 // import { GrSchedule } from "react-icons/gr";
 // import { IoIosNotificationsOutline } from "react-icons/io";
 import { IoWalletOutline } from "react-icons/io5";
-import { SlCalender } from "react-icons/sl";
+// import { SlCalender } from "react-icons/sl";
 import Link from "next/link";
 import { useRouter } from "next/router";
 // import { GoGift } from "react-icons/go";
+import { MdOutlineStadium } from "react-icons/md";
 
 export default function Navbar() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function Navbar() {
         onClick={handleMyMatches}
         className="w-10 h-10 flex items-center justify-center rounded-full bg-[#CEFF00]"
       >
-        <SlCalender />
+        <MdOutlineStadium />
       </button>
       <div className="w-10 h-10  flex items-center cursor-pointer justify-center rounded-full bg-[#CEFF00]">
         <Link href="/wallet">
