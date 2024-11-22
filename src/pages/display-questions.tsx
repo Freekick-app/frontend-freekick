@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { getQuestions } from "@/api/pools";
 import { AuthService } from "@/services/auth";
-// import axiosInstance from "@/utils/axios";
 import { useEffect, useState } from "react";
 
 interface PoolInfo {
@@ -30,8 +27,8 @@ interface Question {
   points: number;
   difficulty: string;
   question_type: string;
-  options: Option[]; // Updated to match the required format
-  user_answer?: UserAnswer; // Updated to handle selected options and timestamp
+  options: Option[];
+  user_answer?: UserAnswer;
 }
 
 interface PoolData {
@@ -41,6 +38,7 @@ interface PoolData {
 
 export default function DisplayQuestions() {
   const [data, setData] = useState<PoolData | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // Tracks the current question
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,23 +48,6 @@ export default function DisplayQuestions() {
     const token = AuthService.getAccessToken();
 
     if (token) {
-      // axiosInstance
-      //   .get(`/pools/${poolId}/questions/`, {
-      //     headers: {
-
-      //     },
-      //   })
-      //   .then((response) => {
-      //     setData(response.data);
-      //     console.log(response.data);
-
-      //   })
-      //   .catch((error) => {
-      //     setError(error.message);
-      //     console.log("Fetch Error: ", error);
-      //   })
-      //   .finally(() => setLoading(false));
-
       const initQuestions = async () => {
         try {
           setError("");
@@ -87,8 +68,22 @@ export default function DisplayQuestions() {
     }
   }, [poolId]);
 
+  const handleNext = () => {
+    if (data && currentQuestionIndex < data.questions.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex((prev) => prev - 1);
+    }
+  };
+
   if (loading) return <p>Loading.....</p>;
   if (error) return <p>Error: {error}</p>;
+
+  const currentQuestion = data?.questions[currentQuestionIndex];
 
   return (
     <div className="p-4">
@@ -114,70 +109,80 @@ export default function DisplayQuestions() {
         </div>
       )}
 
-      <h1>Questions</h1>
-      <ul>
-        {data?.questions.map((question) => (
-          <li key={question.id}>
-            <p>
-              <strong>Question:</strong> {question.text}
-            </p>
-            <p>
-              <strong>Points:</strong> {question.points}
-            </p>
-            <p>
-              <strong>Difficulty:</strong> {question.difficulty}
-            </p>
-            <p>
-              <strong>Type:</strong> {question.question_type}
-            </p>
+      <h1>Question</h1>
+      {currentQuestion && (
+        <div>
+          <p>
+            <strong>Question:</strong> {currentQuestion.text}
+          </p>
+          <p>
+            <strong>Points:</strong> {currentQuestion.points}
+          </p>
+          <p>
+            <strong>Difficulty:</strong> {currentQuestion.difficulty}
+          </p>
+          <p>
+            <strong>Type:</strong> {currentQuestion.question_type}
+          </p>
 
-            <p>
-              <strong>Options:</strong>
-            </p>
-            <ul>
-              {question.options.map((option) => (
-                <li key={option.id}>
-                  <span> - {option.text}</span>
-                </li>
-              ))}
-            </ul>
+          <p>
+            <strong>Options:</strong>
+          </p>
+          <ul>
+            {currentQuestion.options.map((option) => (
+              <li key={option.id}>
+                <span> - {option.text}</span>
+              </li>
+            ))}
+          </ul>
 
-            <p>
-              <strong>Your Answer:</strong>
-            </p>
-            {question.user_answer ? (
-              <div>
-                <p>Answered At: {question.user_answer.answered_at}</p>
-                <ul>
-                  {/* Clean up each selected ID and find the matching option */}
-                  {question.user_answer.selected_option_id
-                    .replace(/'/g, '"')
-                    .slice(1, -1)
-                    .split(",")
-                    .map((selectedId: string) => {
-                      const idTrimmed = selectedId.trim().replace(/['"]/g, ""); // Trim and remove any surrounding quotes
-                      const selectedOption = question.options.find(
-                        (option) => option.id === idTrimmed
-                      );
-                      return (
-                        <li key={idTrimmed}>
-                          <span className="font-bold">
-                            Ans:{" "}
-                            {selectedOption
-                              ? selectedOption.text
-                              : "Unknown option"}
-                          </span>
-                        </li>
-                      );
-                    })}
-                </ul>
-              </div>
-            ) : (
-              <p>Not answered</p>
-            )}
-          </li>
-        ))}
-      </ul>
+          <p>
+            <strong>Your Answer:</strong>
+          </p>
+          {currentQuestion.user_answer ? (
+            <div>
+              <ul>
+                {currentQuestion.user_answer.selected_option_id
+                  .replace(/'/g, '"')
+                  .slice(1, -1)
+                  .split(",")
+                  .map((selectedId: string) => {
+                    const idTrimmed = selectedId.trim().replace(/['"]/g, "");
+                    const selectedOption = currentQuestion.options.find(
+                      (option) => option.id === idTrimmed
+                    );
+                    return (
+                      <li key={idTrimmed}>
+                        <span className="font-bold">
+                          {selectedOption ? selectedOption.text : "Unknown option"}
+                        </span>
+                      </li>
+                    );
+                  })}
+              </ul>
+            </div>
+          ) : (
+            <p>Not answered</p>
+          )}
+        </div>
+      )}
+
+      <div className="mt-4 flex justify-between">
+        <button
+          className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
+          onClick={handlePrevious}
+          disabled={currentQuestionIndex === 0}
+        >
+          Previous
+        </button>
+        <button
+          className="px-4 py-2 bg-gray-200 text-black rounded disabled:opacity-50"
+          onClick={handleNext}
+          disabled={data && currentQuestionIndex === data.questions.length - 1}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }

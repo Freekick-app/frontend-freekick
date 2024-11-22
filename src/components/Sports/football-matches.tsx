@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { getGames } from "@/api/sports";
+import MatchesLoader from "../Loaders/MatchesLoader";
 // import { AuthService } from "@/services/auth";
 interface Team {
   id: number;
@@ -87,14 +88,7 @@ const FootballMatches = () => {
   return (
     <div>
       {loading && (
-        <div className="items-center justify-center flex">
-          <div
-            className="loader border-t-2 rounded-full border-yellow-500 bg-yellow-300 animate-spin
-              aspect-square w-8 flex justify-center items-center text-yellow-700"
-          >
-            $
-          </div>
-        </div>
+        <MatchesLoader/>
       )}
       {error && <p className="text-red-500">{error}</p>}
       <div className="flex flex-col gap-1">

@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // import axiosInstance, { axiosInstanceWithoutAuth } from "@/utils/axios";
 import { getGames, getTeams } from "@/api/sports";
+import TeamsLoader from "@/components/Loaders/TeamsLoader";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -72,52 +73,68 @@ export default function Statistics() {
     }
   };
 
-  const renderOptions = () => (
-    <div className="mt-1">
-      <h2 className="font-bold">Rosters</h2>
-      <div className="grid grid-cols-3 gap-2 p-2">
-        {players.map((player) => (
-          <div key={player?.id} className="text-center bg-gray-600 rounded-lg">
-            <div className="h-28">
-              <img
-                src={player?.headshot_url}
-                alt={player?.full_name}
-                className="h-18 mx-auto"
-              />
-            </div>
-            <p className="text-white mt-2">{player.full_name}</p>
-          </div>
-        ))}
+    const renderOptions = () => (
+      <div className="mt-1">
+        <h2 className="font-bold">Rosters</h2>
+        <div className="grid grid-cols-3 gap-2 p-2">
+          {players.length > 0
+            ? players.map((player) => (
+                <div key={player?.id} className="text-center bg-gray-600 rounded-lg">
+                  <div className="h-28">
+                    {loading ? (
+                      <div className="h-full w-full bg-gray-400 animate-pulse rounded-lg" />
+                    ) : (
+                      <img
+                        src={player?.headshot_url}
+                        alt={player?.full_name}
+                        className="h-18 mx-auto"
+                      />
+                    )}
+                  </div>
+                  <p className="text-white mt-2">{player.full_name}</p>
+                </div>
+              ))
+            :  (<TeamsLoader />)}
+        </div>
       </div>
-    </div>
-  );
+    );
+    
+
 
   return (
     <div>
-      <div className="flex items-center bg-gray-700 px-2 text-white justify-between py-[8px] text-sm rounded-sm">
-        <div
-          className={`text-gray-200 hover:text-white cursor-pointer ${
-            activeTab === "HomeTeam"
-              ? "text-white font-bold border-b-2 border-white"
-              : ""
-          }`}
-          onClick={() => setActiveTab("HomeTeam")}
-        >
-          {homeTeamName || "Home Team"}
-        </div>
-        <div
-          className={`text-gray-200 hover:text-white cursor-pointer ${
-            activeTab === "AwayTeam"
-              ? "text-white font-bold border-b-2 border-white"
-              : ""
-          }`}
-          onClick={() => setActiveTab("AwayTeam")}
-        >
-          {awayTeamName || "Away Team"}
-        </div>
+    <div className="flex items-center bg-gray-700 px-2 text-white justify-between py-[8px] text-sm rounded-sm">
+      <div
+        className={`text-gray-200 hover:text-white cursor-pointer ${
+          activeTab === "HomeTeam"
+            ? "text-white font-bold border-b-2 border-white"
+            : ""
+        }`}
+        onClick={() => setActiveTab("HomeTeam")}
+      >
+        {homeTeamName || "Home Team"}
       </div>
-      {loading ? <p>Loading...</p> : renderOptions()}
-      {error && <p className="text-red-500">{error}</p>}
+      <div
+        className={`text-gray-200 hover:text-white cursor-pointer ${
+          activeTab === "AwayTeam"
+            ? "text-white font-bold border-b-2 border-white"
+            : ""
+        }`}
+        onClick={() => setActiveTab("AwayTeam")}
+      >
+        {awayTeamName || "Away Team"}
+      </div>
     </div>
+    {loading && !error ? (
+      <div className="mt-1">
+        <h2 className="font-bold">Rosters</h2>
+        <TeamsLoader  />
+      </div>
+      
+    ) : (
+      renderOptions()
+    )}
+    {error && <p className="text-red-500">{error}</p>}
+  </div>
   );
 }

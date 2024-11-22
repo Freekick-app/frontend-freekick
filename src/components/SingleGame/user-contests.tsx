@@ -4,6 +4,7 @@ import { AuthService } from "@/services/auth";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import UserContestLoader from "../Loaders/UserContestLoader";
 
 type Participant = {
   id: number;
@@ -97,6 +98,8 @@ export default function UserContests() {
     }
   };
 
+
+
   const groupedPools = myPools.reduce((acc, pool) => {
     if (!acc[pool.bet_size]) {
       acc[pool.bet_size] = [];
@@ -108,15 +111,16 @@ export default function UserContests() {
   return (
     <div className="rounded-lg m-2">
       {loading ? (
-        <div className="text-center text-white p-4">Loading...</div>
+        // <div className="text-center text-white p-4">Loading...</div>
+        <UserContestLoader/>
       ) : error ? (
         <div className="text-red-500 text-center">{error}</div>
       ) : myPools.length === 0 ? (
         <div className="text-center text-white p-4 flex flex-col gap-4 items-center">
           <h1>You have not participated in any contests for this game.</h1>
-          <button className="bg-[#CEFF00] text-black p-2 rounded-lg">
+          {/* <button className="bg-[#CEFF00] text-black p-2 rounded-lg">
             Join Contest
-          </button>
+          </button> */}
         </div>
       ) : Object.keys(groupedPools).length > 0 ? (
         Object.entries(groupedPools).map(([betSize, pools]) => (

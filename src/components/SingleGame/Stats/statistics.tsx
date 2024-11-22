@@ -114,7 +114,7 @@ export default function Statistics() {
     const teamData = gameStats || []; // Make sure gameStats has the data
 
     return (
-      <div className="flex flex-col space-y-4 p-1 font-semibold mt-2">
+      <div className="flex flex-col space-y-4 p-1 font-semibold mt-1">
         {teamData.length > 0 && (
           <table className="w-full text-center text-sm border-collapse border border-gray-300 rounded-2xl overflow-hidden">
             <thead>
@@ -224,10 +224,10 @@ export default function Statistics() {
   };
 
   return (
-    <div>
-      <div className="flex items-center bg-gray-700 px-2 text-white justify-between py-[12px] text-xs rounded-sm">
+    <div className="p-2">
+      <div className="flex items-center bg-gray-700 px-2 text-white justify-between py-[8px] text-xs rounded-2xl">
         <div
-          className={`text-gray-200 hover:text-white cursor-pointer ${
+          className={`text-gray-200 hover:text-white  cursor-pointer ${
             activeTab === "HomeTeam"
               ? "text-white font-bold border-b-2 border-white"
               : ""
@@ -237,7 +237,7 @@ export default function Statistics() {
           {homeTeamName || "Home Team"}
         </div>
         <div
-          className={`text-gray-200 hover:text-white cursor-pointer ${
+          className={`text-gray-200 hover:text-white  cursor-pointer ${
             activeTab === "Overview"
               ? "text-white font-bold border-b-2 border-white"
               : ""

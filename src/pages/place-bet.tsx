@@ -17,6 +17,7 @@ import { getGames } from "@/api/sports";
 import AeonPayService from "@/lib/aeon";
 import { useAppState } from "@/utils/appState";
 import UnAuthorised from "@/components/UnAuthorised";
+import MatchDetailsLoader from "@/components/Loaders/MatchDetailsLoader";
 // import { getProfile } from "@/api/blockchain";
 const PlaceBet = () => {
   const router = useRouter();
@@ -119,8 +120,8 @@ const PlaceBet = () => {
 
   const handleBackToHome = async () => {
     // console.log("Returing to quiz pages");
-
-    router.push("/");
+    router.push(`/`);
+    
   };
 
   const handleSubmitAnswer = async (
@@ -366,7 +367,8 @@ const PlaceBet = () => {
               </div>
             </div>
           ) : (
-            <p>Loading game details...</p>
+            // <p>Loading game details...</p>
+            <MatchDetailsLoader/>
           )}
 
           {renderOptions()}
