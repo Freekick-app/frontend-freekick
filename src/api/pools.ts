@@ -97,3 +97,23 @@ export async function getMyPools(matchId?: any) {
     throw error;
   }
 }
+
+
+export async function getAllMyPools() {
+  try {
+    const url = `${backend_url}/pools`;
+    const response = await fetchWithRefresh(url, {
+      method: "GET",
+      headers: updateHeader(),
+    });
+
+    if (!response.ok) {
+      const erData = await response.json();
+      throw new Error(erData.error);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw error;
+  }
+}

@@ -91,13 +91,20 @@ const FootballMatches = () => {
         <MatchesLoader/>
       )}
       {error && <p className="text-red-500">{error}</p>}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 ">
         {data.map((match) => (
           <div
             key={match.id}
             className="bg-gray-700 w-full rounded-2xl h-[70px] p-1 my-4 relative z-0"
+            style={{
+              backgroundImage: `url('/stadium.jpg')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              
+            
+            }}
           >
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center ">
               <div className="flex items-center">
                 <img
                   src={match.home_team.logo_url}

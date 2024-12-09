@@ -7,7 +7,7 @@ export default function UnAuthorised() {
   return (
     <div className="w-full pt-20 flex flex-col justify-center items-center ">
       <div className="p-10 rounded-md shadow-md">
-        <h1 className="text-2xl font-bold text-center">Unauthorised</h1>
+        <h1 className="text-xl font-bold text-center">Unauthorised</h1>
         <p className="text-center">You are not authorised to view this page</p>
       </div>
       <div className="flex flex-col items-center gap-4">
