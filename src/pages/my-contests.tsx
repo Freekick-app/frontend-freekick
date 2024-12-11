@@ -32,7 +32,7 @@ const MyContests = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const { user, setUser, isInitialized } = useAppState();
-  const [activeTab, setActivetab] = useState("upcoming");
+  const [activeTab, setActiveTab] = useState("upcoming");
 
   const fetchApiData = async () => {
     try {
@@ -71,11 +71,11 @@ const MyContests = () => {
   const renderOptions = () => {
     switch (activeTab) {
       case "upcoming":
-        return <UserUpcomingContests/>
+        return <UserUpcomingContests />
       case "live":
-        return <UserLivecontests/>
+        return <UserLivecontests />
       case "completed":
-        return <UserCompletedContests/>
+        return <UserCompletedContests />
     }
   }
 
@@ -87,12 +87,46 @@ const MyContests = () => {
   }
 
   return (
-    <div className="">
-      <div className="flex justify-between px-2 pt-1  bg-gray-600 text-white font-semibold ">
-        <div className={`${activeTab === "upcoming" ? "  border-b-2 text-[#CEFF00] border-[#CEFF00]": ""} `} onClick={()=> setActivetab("upcoming")}>Upcoming</div>
-        <div className={`${activeTab === "live" ? "  border-b-2 text-[#CEFF00] border-[#CEFF00]": ""} `} onClick={()=> setActivetab("live")}>Live</div>
-        <div className={`${activeTab === "completed" ? " border-b-2 text-[#CEFF00] border-[#CEFF00]": ""} `} onClick={()=> setActivetab("completed")} >Completed</div>
+    <div className="w-full">
+      <div className="px-1">
+        <div className="flex justify-between bg-gray-600 text-white font-semibold rounded-xl items-center">
+
+          <div className="flex w-full justify-between items-center">
+
+            <div
+              className={`${activeTab === "upcoming"
+                ? "text-white bg-[#2663EB] px-4  py-1 rounded-xl cursor-pointer"
+                : " px-4 py-1 cursor-pointer rounded-xl"
+                }`}
+              onClick={() => setActiveTab("upcoming")}
+            >
+              Upcoming
+            </div>
+
+            <div
+              className={`${activeTab === "live"
+                ? "text-white bg-[#2663EB] px-16 py-1 rounded-xl cursor-pointer"
+                : "bg-gray-600 px-4 py-1 cursor-pointer"
+                }`}
+              onClick={() => setActiveTab("live")}
+            >
+              Live
+            </div>
+
+
+            <div
+              className={`${activeTab === "completed"
+                ? "text-white bg-[#2663EB] px-4 py-1 rounded-xl cursor-pointer"
+                : "bg-gray-600 px-4 py-1 cursor-pointer rounded-xl"
+                }`}
+              onClick={() => setActiveTab("completed")}
+            >
+              Completed
+            </div>
+          </div>
+        </div>
       </div>
+
       {renderOptions()}
     </div>
   );

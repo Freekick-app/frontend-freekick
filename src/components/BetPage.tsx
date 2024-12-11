@@ -12,8 +12,12 @@ import { Router, useRouter } from "next/router";
 import VollyballMatches from "./Sports/vollyball-matches";
 import SocerMatches from "./Sports/socer-matches";
 import BasketballMatches from "./Sports/basketball-matches";
+import CricketMatches from "./Sports/cricket-matches";
 import { GiSoccerBall } from "react-icons/gi";
 import { FaBasketball, FaFootball, FaVolleyball } from "react-icons/fa6";
+import { MdSportsCricket } from "react-icons/md";
+import { BiCricketBall } from "react-icons/bi";
+import { BiSolidCricketBall } from "react-icons/bi";
 
 
 export default function BetPage() {
@@ -29,6 +33,13 @@ export default function BetPage() {
       color: "text-[#815337]", 
       logo: "./nflLogo2.png",
       league: "NFL",
+    },
+    {
+      name: "Cricket",
+      icon: <BiSolidCricketBall />,
+      color: "text-black",
+      logo: "./ipl.png",
+      league: "IPL",
     },
     {
       name: "Volleyball",
@@ -63,14 +74,36 @@ export default function BetPage() {
         return <div><SocerMatches/></div>;
       case "Basketball":
         return <div><BasketballMatches/></div>;
+      case "Cricket":
+        return <div><CricketMatches/></div>;
       default:
         return null;
     }
   };
 
   const handleSeeAll = () => {
-    router.push('/all-contests')
-  }
+    switch (selectedSport) {
+      case "Football":
+        router.push("/all-contests");
+        break;
+      case "Cricket":
+        router.push("/cricket-all-contests");
+        break;
+      case "Volleyball":
+        router.push("/volleyball-all-contests");
+        break;
+      case "Soccer":
+        router.push("/soccer-all-contests");
+        break;
+      case "Basketball":
+        router.push("/basketball-all-contests");
+        break;
+      default:
+        router.push("/all-contests"); // Fallback if sport is unrecognized
+    }
+  };
+
+  
   const selectedSportInfo = sports.find(sport => sport.name === selectedSport) ;
 
   return (
@@ -108,7 +141,7 @@ export default function BetPage() {
           <div className='flex items-center justify-between px-4'>
             {/* <h2 className="text-[12px] font-bold">{selectedSport} Matches</h2> */}
            <div className="flex gap-2 items-center">
-              <img src={selectedSportInfo?.logo } alt={`${selectedSportInfo?.league} logo`} className="text-white h-10 " />
+              <img src={selectedSportInfo?.logo } alt={`${selectedSportInfo?.league} logo`} className="text-white max-w-10 max-h-10 " />
               <h2 className="font-bold">{selectedSportInfo?.league}</h2>
             </div>
           
